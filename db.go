@@ -25,6 +25,6 @@ func NewDBConnectionInfo(host string, port int, user string, password string, db
 }
 
 func OpenConnection(info DBConnectionInfo) (*sql.DB, error) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", info.User, info.Port, info.User, info.Password, info.DBName)
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", info.Host, info.Port, info.User, info.Password, info.DBName)
 	return sql.Open("postgres", psqlInfo)
 }
