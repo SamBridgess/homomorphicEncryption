@@ -6,31 +6,31 @@ import (
 )
 
 var (
-	ckksParams, _ = ckks.NewParametersFromLiteral(ckks.PN12QP109)
+	CkksParams, _ = ckks.NewParametersFromLiteral(ckks.PN12QP109)
 )
 
 func EncryptCKKS(data float64, pk *rlwe.PublicKey) ([]byte, error) {
-	encoder := ckks.NewEncoder(ckksParams)
-	encryptor := ckks.NewEncryptor(ckksParams, pk)
+	encoder := ckks.NewEncoder(CkksParams)
+	encryptor := ckks.NewEncryptor(CkksParams, pk)
 
-	plaintext := ckks.NewPlaintext(ckksParams, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	encoder.Encode([]float64{data}, plaintext, ckksParams.LogSlots())
+	plaintext := ckks.NewPlaintext(CkksParams, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+	encoder.Encode([]float64{data}, plaintext, CkksParams.LogSlots())
 
 	ciphertext := encryptor.EncryptNew(plaintext)
 	return ciphertext.MarshalBinary()
 }
 
 func DecryptCKKS(data []byte, sk *rlwe.SecretKey) (float64, error) {
-	decryptor := ckks.NewDecryptor(ckksParams, sk)
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
+	decryptor := ckks.NewDecryptor(CkksParams, sk)
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 	err := ciphertext.UnmarshalBinary(data)
 	if err != nil {
 		return 0, err
 	}
 
 	plaintext := decryptor.DecryptNew(ciphertext)
-	encoder := ckks.NewEncoder(ckksParams)
-	decoded := encoder.Decode(plaintext, ckksParams.LogSlots())
+	encoder := ckks.NewEncoder(CkksParams)
+	decoded := encoder.Decode(plaintext, CkksParams.LogSlots())
 
 	return real(decoded[0]), nil
 }
