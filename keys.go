@@ -6,16 +6,16 @@ import (
 	"github.com/ldsec/lattigo/v2/rlwe"
 )
 
-func genKeysCKKS(ckksParams ckks.Parameters) (*rlwe.SecretKey, *rlwe.PublicKey) {
+func GenKeysCKKS(ckksParams ckks.Parameters) (*rlwe.SecretKey, *rlwe.PublicKey) {
 	return ckks.NewKeyGenerator(ckksParams).GenKeyPair()
 }
 
-func genKeyAES() ([]byte, error) {
+func GenKeyAES() ([]byte, error) {
 	aesKey := make([]byte, 32)
 	_, err := rand.Read(aesKey)
 	return aesKey, err
 }
 
-func genKeyEval() *rlwe.EvaluationKey {
+func GenKeyEval() *rlwe.EvaluationKey {
 	return nil
 }
