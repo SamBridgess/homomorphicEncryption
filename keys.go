@@ -17,5 +17,5 @@ func genKeyAES() ([]byte, error) {
 }
 
 func genKeyEval() *rlwe.EvaluationKey {
-
+	return nil
 }

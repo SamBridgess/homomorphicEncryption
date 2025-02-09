@@ -9,7 +9,7 @@ var (
 	ckksParams, _ = ckks.NewParametersFromLiteral(ckks.PN12QP109)
 )
 
-func encryptCKKS(data float64, pk *rlwe.PublicKey) ([]byte, error) {
+func EncryptCKKS(data float64, pk *rlwe.PublicKey) ([]byte, error) {
 	encoder := ckks.NewEncoder(ckksParams)
 	encryptor := ckks.NewEncryptor(ckksParams, pk)
 
@@ -20,7 +20,7 @@ func encryptCKKS(data float64, pk *rlwe.PublicKey) ([]byte, error) {
 	return ciphertext.MarshalBinary()
 }
 
-func decryptCKKS(data []byte, sk *rlwe.SecretKey) (float64, error) {
+func DecryptCKKS(data []byte, sk *rlwe.SecretKey) (float64, error) {
 	decryptor := ckks.NewDecryptor(ckksParams, sk)
 	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
 	err := ciphertext.UnmarshalBinary(data)
