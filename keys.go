@@ -15,3 +15,7 @@ func genKeyAES() ([]byte, error) {
 	_, err := rand.Read(aesKey)
 	return aesKey, err
 }
+
+func genKeyEval() *rlwe.EvaluationKey {
+
+}

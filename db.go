@@ -13,7 +13,7 @@ type DBConnectionInfo struct {
 	DBName   string
 }
 
-func NewDBConnectionInfo(host string, port int, user string, password string, dbname string) *DBConnectionInfo {
+func NewDBConnectionInfo(host string, port int, user string, password string, dbname string) DBConnectionInfo {
 	info := DBConnectionInfo{
 		Host:     host,
 		Port:     port,
@@ -21,7 +21,7 @@ func NewDBConnectionInfo(host string, port int, user string, password string, db
 		Password: password,
 		DBName:   dbname,
 	}
-	return &info
+	return info
 }
 
 func OpenConnection(info DBConnectionInfo) (*sql.DB, error) {
