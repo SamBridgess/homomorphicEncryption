@@ -14,7 +14,7 @@ func GenKeyAES() ([]byte, error) {
 	return aesKey, err
 }
 
-func encryptAES(data []byte, aesKey []byte) ([]byte, error) {
+func EncryptAES(data []byte, aesKey []byte) ([]byte, error) {
 	block, err := aes.NewCipher(aesKey)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func encryptAES(data []byte, aesKey []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-func decryptAES(data []byte, aesKey []byte) ([]byte, error) {
+func DecryptAES(data []byte, aesKey []byte) ([]byte, error) {
 	block, err := aes.NewCipher(aesKey)
 	if err != nil {
 		return nil, err
