@@ -5,6 +5,10 @@ import (
 	"github.com/ldsec/lattigo/v2/rlwe"
 )
 
+func GenKeysCKKS(ckksParams ckks.Parameters) (*rlwe.SecretKey, *rlwe.PublicKey) {
+	return ckks.NewKeyGenerator(ckksParams).GenKeyPair()
+}
+
 func GenNewCkksParams() (ckks.Parameters, error) {
 	return ckks.NewParametersFromLiteral(ckks.PN12QP109)
 }
