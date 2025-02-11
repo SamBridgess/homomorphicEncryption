@@ -3,6 +3,7 @@ package homomorphic_encryption_lib
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -62,6 +63,7 @@ func handleDecrypt(c *gin.Context) {
 		}
 	*/
 	decResult, err := DecryptCKKS(req.EncryptedResult)
+	fmt.Println(decResult)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
