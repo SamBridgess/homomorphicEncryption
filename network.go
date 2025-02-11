@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func SendComputationResult(url string, encryptedResult []byte) ([]byte, error) {
+func SendComputationResult(url string, encryptedResult []byte) ([]float64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
 	if err != nil {
 		return nil, err
