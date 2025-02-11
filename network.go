@@ -30,9 +30,6 @@ func SendComputationResult(url string, encryptedResult []byte) ([]byte, error) {
 }
 
 func ServerHandler() *gin.Engine {
-	GenNewCkksParams()
-	GenKeysCKKS()
-
 	r := gin.Default()
 
 	r.POST("/compute", handleDecrypt)
