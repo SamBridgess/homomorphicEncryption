@@ -20,7 +20,7 @@ func SendComputationResult(url string, encryptedResult []byte) ([]byte, error) {
 	defer resp.Body.Close()
 
 	var response struct {
-		DecryptedResult []byte `json:"decrypted_result"`
+		DecryptedResult []float64 `json:"decrypted_result"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return nil, err
