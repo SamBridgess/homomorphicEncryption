@@ -32,32 +32,44 @@ func SendComputationResult(url string, encryptedResult []byte) ([]byte, error) {
 }
 
 func ServerHandler(sk *rlwe.SecretKey, ckksParams ckks.Parameters) *gin.Engine {
+	GenNewCkksParams()
+	GenKeysCKKS()
+
 	r := gin.Default()
 
-	r.POST("/compute", func(c *gin.Context) {
-		var req struct {
-			EncryptedResult []byte `json:"encrypted_result"`
-		}
-		if err := c.BindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+	r.POST("/compute", handleDecrypt)
+	r.GET("/get_ckks_params", handleGetCkksParams)
+	return r
+}
+func handleGetCkksParams(c *gin.Context) {
+	paramsJSON, err := json.Marshal(CkksParams)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ckks serialization error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"ckks_params": string(paramsJSON)})
+}
 
-		/*
-			key, _ := GenKeyAES()
-			plaintext, err := homomorphic_encryption_lib.DecryptAES(req.EncryptedResult, key)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-		*/
-		decResult, err := DecryptCKKS(req.EncryptedResult, sk, ckksParams)
+func handleDecrypt(c *gin.Context) {
+	var req struct {
+		EncryptedResult []byte `json:"encrypted_result"`
+	}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	/*
+		key, _ := GenKeyAES()
+		plaintext, err := homomorphic_encryption_lib.DecryptAES(req.EncryptedResult, key)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
-	})
-
-	return r
+	*/
+	decResult, err := DecryptCKKS(req.EncryptedResult)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
 }
