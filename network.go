@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/ldsec/lattigo/v2/ckks"
-	"github.com/ldsec/lattigo/v2/rlwe"
 	"net/http"
 )
 
@@ -31,7 +29,7 @@ func SendComputationResult(url string, encryptedResult []byte) ([]byte, error) {
 	return response.DecryptedResult, nil
 }
 
-func ServerHandler(sk *rlwe.SecretKey, ckksParams ckks.Parameters) *gin.Engine {
+func ServerHandler() *gin.Engine {
 	GenNewCkksParams()
 	GenKeysCKKS()
 
