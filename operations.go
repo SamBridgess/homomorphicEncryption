@@ -112,7 +112,7 @@ func Mean(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, erro
 
 func ArraySum(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, error) {
 	if len(encryptedDataArray) == 0 {
-		return nil, errors.New("Cannot use empty array!")
+		return nil, errors.New("cannot use empty array")
 	}
 
 	evaluator := getNewEvaluator(ckksParams)
