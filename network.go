@@ -8,23 +8,23 @@ import (
 	"net/http"
 )
 
-func SendComputationResult(url string, encryptedResult []byte) ([]float64, error) {
+func SendComputationResult(url string, encryptedResult []byte) (float64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
 	if err != nil {
-		return nil, err
+		return 0.0, err
 	}
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
 	if err != nil {
-		return nil, err
+		return 0.0, err
 	}
 	defer resp.Body.Close()
 
 	var response struct {
-		DecryptedResult []float64 `json:"decrypted_result"`
+		DecryptedResult float64 `json:"decrypted_result"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
-		return nil, err
+		return 0.0, err
 	}
 
 	return response.DecryptedResult, nil
