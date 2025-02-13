@@ -18,7 +18,7 @@ func ServerHandler() *gin.Engine {
 	return r
 }
 
-func getCKKSParams(serverURL string) (ckks.Parameters, error) {
+func GetCKKSParamsFromServer(serverURL string) (ckks.Parameters, error) {
 	resp, err := http.Get(serverURL)
 	if err != nil {
 		return ckks.Parameters{}, err
@@ -46,7 +46,7 @@ func getCKKSParams(serverURL string) (ckks.Parameters, error) {
 	return ckksParams, nil
 }
 
-func SendComputationResult(url string, encryptedResult []byte) (float64, error) {
+func SendComputationResultToServer(url string, encryptedResult []byte) (float64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
 	if err != nil {
 		return 0.0, err
