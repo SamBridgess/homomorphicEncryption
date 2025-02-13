@@ -107,7 +107,7 @@ func Mean(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, erro
 		return nil, err
 	}
 
-	return evaluator.MultByConstNew(ciphertext, 1.0/len(encryptedDataArray)).MarshalBinary()
+	return evaluator.MultByConstNew(ciphertext, 1.0/float64(len(encryptedDataArray))).MarshalBinary()
 }
 
 func ArraySum(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, error) {
