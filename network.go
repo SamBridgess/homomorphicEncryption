@@ -48,7 +48,7 @@ func handleGetCkksParams(c *gin.Context) {
 
 func handleDecrypt(c *gin.Context) {
 	var req struct {
-		EncryptedResult []byte `json:"encrypted_result"`
+		EncryptedResult []byte
 	}
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
