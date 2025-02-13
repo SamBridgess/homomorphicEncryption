@@ -5,8 +5,46 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/ldsec/lattigo/v2/ckks"
+	"io"
 	"net/http"
 )
+
+func ServerHandler() *gin.Engine {
+	r := gin.Default()
+
+	r.POST("/compute", handleDecrypt)
+	r.GET("/get_ckks_params", handleGetCkksParams)
+	return r
+}
+
+func getCKKSParams(serverURL string) (ckks.Parameters, error) {
+	resp, err := http.Get(serverURL)
+	if err != nil {
+		return ckks.Parameters{}, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ckks.Parameters{}, err
+	}
+
+	var response struct {
+		CKKSParams string `json:"ckks_params"`
+	}
+
+	if err := json.Unmarshal(body, &response); err != nil {
+		return ckks.Parameters{}, err
+	}
+
+	var ckksParams ckks.Parameters
+	if err := json.Unmarshal([]byte(response.CKKSParams), &ckksParams); err != nil {
+		return ckks.Parameters{}, err
+	}
+
+	return ckksParams, nil
+}
 
 func SendComputationResult(url string, encryptedResult []byte) (float64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
@@ -30,13 +68,6 @@ func SendComputationResult(url string, encryptedResult []byte) (float64, error) 
 	return response.DecryptedResult, nil
 }
 
-func ServerHandler() *gin.Engine {
-	r := gin.Default()
-
-	r.POST("/compute", handleDecrypt)
-	r.GET("/get_ckks_params", handleGetCkksParams)
-	return r
-}
 func handleGetCkksParams(c *gin.Context) {
 	paramsJSON, err := json.Marshal(CkksParams)
 	if err != nil {
