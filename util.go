@@ -1,14 +1,17 @@
 package homomorphic_encryption_lib
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"math"
+)
 
 func FloatToBytes(f float64) []byte {
 	buf := make([]byte, 8)
-	binary.LittleEndian.PutUint64(buf, uint64(f))
+	binary.LittleEndian.PutUint64(buf, math.Float64bits(f))
 	return buf
 }
 
 func BytesToFloat(b []byte) float64 {
 	recoveredUint := binary.LittleEndian.Uint64(b)
-	return float64(recoveredUint)
+	return math.Float64frombits(recoveredUint)
 }
