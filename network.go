@@ -62,13 +62,14 @@ func SendComputationResultToServer(url string, encryptedResult []byte) (float64,
 	defer resp.Body.Close()
 
 	var response struct {
-		DecryptedResult float64 `json:"decrypted_result"`
+		DecryptedResult []byte `json:"decrypted_result"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return 0.0, err
 	}
 
-	return response.DecryptedResult, nil
+	decryptedResultAes, _ := DecryptAES(response.DecryptedResult, AesKey)
+	return BytesToFloat(decryptedResultAes), nil
 }
 
 func handleGetCkksParams(c *gin.Context) {
