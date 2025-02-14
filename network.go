@@ -42,7 +42,7 @@ func StartSecureServer() {
 func GetCKKSParamsFromServer(serverURL string) (ckks.Parameters, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //test only
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
 		},
 	}
 
@@ -81,7 +81,7 @@ func SendComputationResultToServer(url string, encryptedResult []byte) (float64,
 
 	client := &http.Client{
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //test only
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
 		},
 	}
 
