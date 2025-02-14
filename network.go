@@ -3,17 +3,20 @@ package homomorphic_encryption_lib
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/ldsec/lattigo/v2/ckks"
 	"io"
 	"net/http"
 )
 
+var (
+	AesKey []byte = make([]byte, 32)
+)
+
 func ServerHandler() *gin.Engine {
 	r := gin.Default()
 
-	r.POST("/compute", handleDecrypt)
+	r.POST("/decrypt_computations", handleDecrypt)
 	r.GET("/get_ckks_params", handleGetCkksParams)
 	return r
 }
@@ -85,6 +88,7 @@ func handleDecrypt(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	/*
 		key, _ := GenKeyAES()
 		plaintext, err := homomorphic_encryption_lib.DecryptAES(req.EncryptedResult, key)
@@ -94,10 +98,12 @@ func handleDecrypt(c *gin.Context) {
 		}
 	*/
 	decResult, err := DecryptCKKS(req.EncryptedResult)
-	fmt.Println(decResult)
+
+	decResultAes, _ := EncryptAES(FloatToBytes(decResult), AesKey)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
+	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResultAes})
 }

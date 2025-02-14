@@ -13,12 +13,10 @@ var (
 
 func GenNewCkksParams() {
 	CkksParams, _ = ckks.NewParametersFromLiteral(ckks.PN12QP109)
-	//return CkksParams, err
 }
 
 func GenKeysCKKS() {
 	Sk, Pk = ckks.NewKeyGenerator(CkksParams).GenKeyPair()
-	//return Sk, Pk
 }
 
 func EncryptCKKS(data float64) ([]byte, error) {
