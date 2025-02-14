@@ -2,6 +2,7 @@ package homomorphic_encryption_lib
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/ldsec/lattigo/v2/ckks"
@@ -21,8 +22,31 @@ func ServerHandler() *gin.Engine {
 	return r
 }
 
+func StartSecureServer() {
+	r := gin.Default()
+
+	r.POST("/decrypt_computations", handleDecrypt)
+	r.GET("/get_ckks_params", handleGetCkksParams)
+
+	server := &http.Server{
+		Addr:    ":443",
+		Handler: r,
+	}
+
+	err := server.ListenAndServeTLS("cert.pem", "key.pem")
+	if err != nil {
+		panic("Ошибка запуска HTTPS-сервера: " + err.Error())
+	}
+}
+
 func GetCKKSParamsFromServer(serverURL string) (ckks.Parameters, error) {
-	resp, err := http.Get(serverURL)
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //test only
+		},
+	}
+
+	resp, err := client.Get(serverURL)
 	if err != nil {
 		return ckks.Parameters{}, err
 	}
@@ -55,7 +79,13 @@ func SendComputationResultToServer(url string, encryptedResult []byte) (float64,
 		return 0.0, err
 	}
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, //test only
+		},
+	}
+
+	resp, err := client.Post(url, "application/json", bytes.NewBuffer(data))
 	if err != nil {
 		return 0.0, err
 	}
