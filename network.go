@@ -89,18 +89,9 @@ func handleDecrypt(c *gin.Context) {
 		return
 	}
 
-	/*
-		key, _ := GenKeyAES()
-		plaintext, err := homomorphic_encryption_lib.DecryptAES(req.EncryptedResult, key)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	*/
 	decResult, err := DecryptCKKS(req.EncryptedResult)
 
 	decResultAes, _ := EncryptAES(FloatToBytes(decResult), AesKey)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
