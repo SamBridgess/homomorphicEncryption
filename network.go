@@ -11,9 +11,14 @@ import (
 )
 
 var (
-	AesKey []byte = make([]byte, 32)
+	HttpsServer = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
+		},
+	}
 )
 
+// ServerHandler HTTP Handler
 func ServerHandler() *gin.Engine {
 	r := gin.Default()
 
@@ -22,6 +27,7 @@ func ServerHandler() *gin.Engine {
 	return r
 }
 
+// StartSecureServer Start HTTPS server
 func StartSecureServer() {
 	r := gin.Default()
 
@@ -35,16 +41,12 @@ func StartSecureServer() {
 
 	err := server.ListenAndServeTLS("cert.pem", "key.pem")
 	if err != nil {
-		panic("Ошибка запуска HTTPS-сервера: " + err.Error())
+		panic("HTTPS server could not start: " + err.Error())
 	}
 }
 
 func GetCKKSParamsFromServer(serverURL string) (ckks.Parameters, error) {
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
-		},
-	}
+	client := HttpsServer
 
 	resp, err := client.Get(serverURL)
 	if err != nil {
@@ -79,11 +81,7 @@ func SendComputationResultToServer(url string, encryptedResult []byte) (float64,
 		return 0.0, err
 	}
 
-	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: false},
-		},
-	}
+	client := HttpsServer
 
 	resp, err := client.Post(url, "application/json", bytes.NewBuffer(data))
 	if err != nil {
@@ -92,14 +90,13 @@ func SendComputationResultToServer(url string, encryptedResult []byte) (float64,
 	defer resp.Body.Close()
 
 	var response struct {
-		DecryptedResult []byte `json:"decrypted_result"`
+		DecryptedResult float64 `json:"decrypted_result"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return 0.0, err
 	}
 
-	decryptedResultAes, _ := DecryptAES(response.DecryptedResult, AesKey)
-	return BytesToFloat(decryptedResultAes), nil
+	return response.DecryptedResult, nil
 }
 
 func handleGetCkksParams(c *gin.Context) {
@@ -122,10 +119,9 @@ func handleDecrypt(c *gin.Context) {
 
 	decResult, err := DecryptCKKS(req.EncryptedResult)
 
-	decResultAes, _ := EncryptAES(FloatToBytes(decResult), AesKey)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResultAes})
+	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
 }
