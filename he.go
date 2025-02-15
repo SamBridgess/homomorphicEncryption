@@ -6,14 +6,9 @@ import (
 )
 
 var (
-	CkksParams ckks.Parameters
-	Sk         *rlwe.SecretKey
-	Pk         *rlwe.PublicKey
+	Sk *rlwe.SecretKey
+	Pk *rlwe.PublicKey
 )
-
-func GenNewCkksParams() {
-	CkksParams, _ = ckks.NewParametersFromLiteral(ckks.PN12QP109)
-}
 
 func GenKeysCKKS() {
 	Sk, Pk = ckks.NewKeyGenerator(CkksParams).GenKeyPair()
