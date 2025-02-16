@@ -29,7 +29,7 @@ func LoadOrGenerateKeys(paramsFile string) {
 		GenerateAndSaveKeys(paramsFile)
 	} else {
 		fmt.Println("Loading keys from file...")
-		LoadCKKSParams(paramsFile)
+		LoadKeys(paramsFile)
 	}
 }
 
