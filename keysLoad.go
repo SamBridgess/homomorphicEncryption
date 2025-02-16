@@ -15,12 +15,16 @@ type KeyPair struct {
 	Pk *rlwe.PublicKey
 }
 
-func newKeyPair(Sk *rlwe.SecretKey, Pk *rlwe.PublicKey) KeyPair {
+func NewKeyPair(Sk *rlwe.SecretKey, Pk *rlwe.PublicKey) KeyPair {
 	pair := KeyPair{
 		Sk: Sk,
 		Pk: Pk,
 	}
 	return pair
+}
+
+func GenKeysCKKS() {
+	Keys = NewKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
 }
 
 func LoadOrGenerateKeys(paramsFile string) {
@@ -61,8 +65,4 @@ func LoadKeys(paramsFile string) {
 	}
 
 	fmt.Println("Keys loaded from file.")
-}
-
-func GenKeysCKKS() {
-	Keys = newKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
 }
