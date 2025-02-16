@@ -20,11 +20,7 @@ func LoadOrGenerateCKKSParams(paramsFile string) {
 }
 
 func GenerateAndSaveCKKSParams(paramsFile string) {
-	var err error
-	CkksParams, err = ckks.NewParametersFromLiteral(ckks.PN14QP438)
-	if err != nil {
-		panic(err)
-	}
+	GenerateNewCkksParams()
 
 	data, err := json.Marshal(CkksParams)
 	if err != nil {
@@ -51,4 +47,8 @@ func LoadCKKSParams(paramsFile string) {
 	}
 
 	fmt.Println("CKKS params loaded from file.")
+}
+
+func GenerateNewCkksParams() {
+	CkksParams, _ = ckks.NewParametersFromLiteral(ckks.PN14QP438)
 }

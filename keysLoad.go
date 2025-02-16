@@ -34,11 +34,7 @@ func LoadOrGenerateKeys(paramsFile string) {
 }
 
 func GenerateAndSaveKeys(paramsFile string) {
-	var err error
-	Keys = newKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
-	if err != nil {
-		panic(err)
-	}
+	GenKeysCKKS()
 
 	data, err := json.Marshal(Keys)
 	if err != nil {
@@ -65,4 +61,8 @@ func LoadKeys(paramsFile string) {
 	}
 
 	fmt.Println("Keys loaded from file.")
+}
+
+func GenKeysCKKS() {
+	Keys = newKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
 }

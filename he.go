@@ -4,10 +4,6 @@ import (
 	"github.com/ldsec/lattigo/v2/ckks"
 )
 
-func GenKeysCKKS() {
-	Keys = newKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
-}
-
 func EncryptCKKS(data float64) ([]byte, error) {
 	encoder := ckks.NewEncoder(CkksParams)
 	encryptor := ckks.NewEncryptor(CkksParams, Keys.Pk)
