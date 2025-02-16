@@ -2,21 +2,15 @@ package homomorphic_encryption_lib
 
 import (
 	"github.com/ldsec/lattigo/v2/ckks"
-	"github.com/ldsec/lattigo/v2/rlwe"
-)
-
-var (
-	Sk *rlwe.SecretKey
-	Pk *rlwe.PublicKey
 )
 
 func GenKeysCKKS() {
-	Sk, Pk = ckks.NewKeyGenerator(CkksParams).GenKeyPair()
+	Keys = newKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
 }
 
 func EncryptCKKS(data float64) ([]byte, error) {
 	encoder := ckks.NewEncoder(CkksParams)
-	encryptor := ckks.NewEncryptor(CkksParams, Pk)
+	encryptor := ckks.NewEncryptor(CkksParams, Keys.Pk)
 
 	plaintext := ckks.NewPlaintext(CkksParams, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 	encoder.Encode([]float64{data}, plaintext, CkksParams.LogSlots())
@@ -26,7 +20,7 @@ func EncryptCKKS(data float64) ([]byte, error) {
 }
 
 func DecryptCKKS(data []byte) (float64, error) {
-	decryptor := ckks.NewDecryptor(CkksParams, Sk)
+	decryptor := ckks.NewDecryptor(CkksParams, Keys.Sk)
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 	err := ciphertext.UnmarshalBinary(data)
 	if err != nil {
