@@ -28,7 +28,7 @@ func ServerHandler() *gin.Engine {
 }
 
 // StartSecureServer Start HTTPS server. Port must be passed as is, without ':'
-func StartSecureServer(port string) {
+func StartSecureServer(port string, certFile string, keyFile string) {
 	r := gin.Default()
 
 	r.POST("/decrypt_computations", handleDecrypt)
@@ -39,7 +39,7 @@ func StartSecureServer(port string) {
 		Handler: r,
 	}
 
-	err := server.ListenAndServeTLS("cert.pem", "key.pem")
+	err := server.ListenAndServeTLS(certFile, keyFile)
 	if err != nil {
 		panic("HTTPS server could not start: " + err.Error())
 	}

@@ -47,7 +47,7 @@ and gets sent back to the client
 result, err := homomorphic_encryption_lib.SendComputationResultToServer("https://ip_address:port/decrypt_computations", encryptedResult)
 ```
 
-The interaction is complete and no client may use the result
+The interaction is complete and now client may use the result
 as it pleases
 ``` go
 fmt.Println(result)
