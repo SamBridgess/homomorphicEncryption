@@ -27,15 +27,15 @@ func ServerHandler() *gin.Engine {
 	return r
 }
 
-// StartSecureServer Start HTTPS server
-func StartSecureServer() {
+// StartSecureServer Start HTTPS server. Port must be passed as is, without ':'
+func StartSecureServer(port string) {
 	r := gin.Default()
 
 	r.POST("/decrypt_computations", handleDecrypt)
 	r.GET("/get_ckks_params", handleGetCkksParams)
 
 	server := &http.Server{
-		Addr:    ":443",
+		Addr:    ":" + port,
 		Handler: r,
 	}
 
@@ -45,6 +45,7 @@ func StartSecureServer() {
 	}
 }
 
+// GetCKKSParamsFromServer Retrieve CKKS parameters from server
 func GetCKKSParamsFromServer(serverURL string) (ckks.Parameters, error) {
 	client := HttpsServer
 
@@ -75,6 +76,7 @@ func GetCKKSParamsFromServer(serverURL string) (ckks.Parameters, error) {
 	return ckksParams, nil
 }
 
+// SendComputationResultToServer Send computation results to server and get a decrypted result
 func SendComputationResultToServer(url string, encryptedResult []byte) (float64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
 	if err != nil {
