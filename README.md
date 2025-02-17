@@ -12,15 +12,48 @@ homomorphic_encryption_lib.LoadOrGenerateKeys("keys.json")
 ```
 
 To start the https server, use `StartSecureServer` with port 
-passed without `:`
+passed without `:` a certificate and a key for ssl
 ``` go
-homomorphic_encryption_lib.StartSecureServer("port")
+homomorphic_encryption_lib.StartSecureServer("port", "cert.pem", "key.pem")
 ```
 
 Encryption and decryption of data is done by `EncryptCKKS(data)` 
 and `DecryptCKKS(data)`, taking `float64` as an argument. Notice,
 that if you store your encrypted data anywhere, the Secret and Public
 keys should be the same for encryption and decryption.
+
+### Certificates
+<details open>
+  <summary>Certificate example</summary>
+HTTPS requires secured connection. If you only want to test
+this package out, you can generate it by yourself. Create an
+`openssl.cnf` file
+
+``` 
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+CN = 127.0.0.1
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+IP.1 = 127.0.0.1
+```
+
+Generate `cert.pem` and `key.pem`
+``` commandline
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -config openssl.cnf
+sudo cp cert.pem /usr/local/share/ca-certificates/my_cert.crt
+sudo update-ca-certificates
+```
+If you want to make a real certificate, change the cnf file for
+your own purposes
+</details>
 
 ## Client side
 Before everything, you will have to retrieve CKKS Parameters
