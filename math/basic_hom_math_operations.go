@@ -1,7 +1,6 @@
-package homomorphic_encryption_lib
+package math
 
 import (
-	"errors"
 	"github.com/ldsec/lattigo/v2/ckks"
 	"github.com/ldsec/lattigo/v2/rlwe"
 )
@@ -12,7 +11,7 @@ func getNewEvaluator(ckksParams ckks.Parameters) ckks.Evaluator {
 	return ckks.NewEvaluator(ckksParams, evalKey)
 }
 
-func makeZeroCipherText(evaluator ckks.Evaluator, ckksParams ckks.Parameters, encryptedData []byte) (*ckks.Ciphertext, error) {
+func MakeZeroCipherText(evaluator ckks.Evaluator, ckksParams ckks.Parameters, encryptedData []byte) (*ckks.Ciphertext, error) {
 	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
 	err := ciphertext.UnmarshalBinary(encryptedData)
 	if err != nil {
@@ -90,47 +89,4 @@ func DivByConst(encryptedData []byte, divisor float64, ckksParams ckks.Parameter
 	}
 
 	return evaluator.MultByConstNew(ciphertext, 1.0/divisor).MarshalBinary()
-}
-
-func Mean(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, error) {
-	evaluator := getNewEvaluator(ckksParams)
-
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-
-	sum, err := ArraySum(encryptedDataArray, ckksParams)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ciphertext.UnmarshalBinary(sum)
-	if err != nil {
-		return nil, err
-	}
-
-	return evaluator.MultByConstNew(ciphertext, 1.0/float64(len(encryptedDataArray))).MarshalBinary()
-}
-
-func ArraySum(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, error) {
-	if len(encryptedDataArray) == 0 {
-		return nil, errors.New("cannot use empty array")
-	}
-
-	evaluator := getNewEvaluator(ckksParams)
-
-	sumCiphertext, err := makeZeroCipherText(evaluator, ckksParams, encryptedDataArray[0])
-	if err != nil {
-		return nil, err
-	}
-
-	for _, encryptedData := range encryptedDataArray {
-		ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-
-		err := ciphertext.UnmarshalBinary(encryptedData)
-		evaluator.Add(sumCiphertext, ciphertext, sumCiphertext)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return sumCiphertext.MarshalBinary()
 }
