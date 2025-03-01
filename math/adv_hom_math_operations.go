@@ -69,7 +69,7 @@ func Sqrt(encryptedData []byte, ckksParams ckks.Parameters) ([]byte, error) {
 		return nil, err
 	}
 
-	coefficients := []float64{0.210, 0.858, -0.026}
+	coefficients := []float64{-0.01889609, 0.44417952, 0.51442034}
 	xSquared := evaluator.MulNew(ciphertext, ciphertext)
 	term2 := evaluator.MultByConstNew(xSquared, coefficients[2])
 	term1 := evaluator.MultByConstNew(ciphertext, coefficients[1])
