@@ -61,7 +61,7 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int, ckksParams ckks.
 	return r, nil
 }
 
-func Sqrt(encryptedData []byte, ckksParams ckks.Parameters) ([]byte, error) {
+func Sqrt(encryptedData []byte, coefficients []float64, ckksParams ckks.Parameters) ([]byte, error) {
 	evaluator := getNewEvaluator(ckksParams)
 	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
 	err := ciphertext.UnmarshalBinary(encryptedData)
@@ -69,7 +69,7 @@ func Sqrt(encryptedData []byte, ckksParams ckks.Parameters) ([]byte, error) {
 		return nil, err
 	}
 
-	coefficients := []float64{-0.01889609, 0.44417952, 0.51442034}
+	//coefficients := []float64{-0.01889609, 0.44417952, 0.51442034}
 	xSquared := evaluator.MulNew(ciphertext, ciphertext)
 	term2 := evaluator.MultByConstNew(xSquared, coefficients[2])
 	term1 := evaluator.MultByConstNew(ciphertext, coefficients[1])
