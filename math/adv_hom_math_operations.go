@@ -69,13 +69,12 @@ func Sqrt(encryptedData []byte, ckksParams ckks.Parameters) ([]byte, error) {
 		return nil, err
 	}
 
-	// Define the polynomial coefficients for sqrt(x) approximation
-	coefficients := []float64{0.210, 0.858, -0.026} // Example coefficients for P(x) = c0 + c1*x + c2*x^2
-
-	result := evaluator.MultByConstNew(ciphertext, coefficients[2])     // x * c2
-	result = evaluator.AddConstNew(result, complex(coefficients[1], 0)) // c1 + x*c2
-	result = evaluator.MulNew(result, ciphertext)                       // x * (c1 + x*c2)
-	result = evaluator.AddConstNew(result, complex(coefficients[0], 0)) // c0 + x*(c1 + x*c2)
+	coefficients := []float64{0.210, 0.858, -0.026}
+	xSquared := evaluator.MulNew(ciphertext, ciphertext)
+	term2 := evaluator.MultByConstNew(xSquared, coefficients[2])
+	term1 := evaluator.MultByConstNew(ciphertext, coefficients[1])
+	result := evaluator.AddNew(term1, term2)
+	result = evaluator.AddConstNew(result, complex(coefficients[0], 0))
 
 	return result.MarshalBinary()
 }
