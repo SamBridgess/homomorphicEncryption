@@ -60,3 +60,22 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int, ckksParams ckks.
 	}
 	return r, nil
 }
+
+func Sqrt(encryptedData []byte, ckksParams ckks.Parameters) ([]byte, error) {
+	evaluator := getNewEvaluator(ckksParams)
+	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
+	err := ciphertext.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	// Define the polynomial coefficients for sqrt(x) approximation
+	coefficients := []float64{0.3725, 0.5, -0.045} // Example coefficients for P(x) = c0 + c1*x + c2*x^2
+
+	result := evaluator.MultByConstNew(ciphertext, coefficients[2])     // x * c2
+	result = evaluator.AddConstNew(result, complex(coefficients[1], 0)) // c1 + x*c2
+	result = evaluator.MulNew(result, ciphertext)                       // x * (c1 + x*c2)
+	result = evaluator.AddConstNew(result, complex(coefficients[0], 0)) // c0 + x*(c1 + x*c2)
+
+	return result.MarshalBinary()
+}
