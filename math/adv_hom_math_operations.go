@@ -78,3 +78,35 @@ func Sqrt(encryptedData []byte, coefficients []float64, ckksParams ckks.Paramete
 
 	return result.MarshalBinary()
 }
+
+func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, apr int, ckksParams ckks.Parameters) ([]byte, error) {
+	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
+	ciphertext2 := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
+
+	err := ciphertext.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	err = ciphertext2.UnmarshalBinary(encryptedData2)
+	if err != nil {
+		return nil, err
+	}
+
+	evaluator := getNewEvaluator(ckksParams)
+
+	inverseC2 := InverseNewton(evaluator, ciphertext2, iterations, apr)
+
+	return evaluator.MulNew(ciphertext, inverseC2).MarshalBinary()
+}
+
+func InverseNewton(evaluator ckks.Evaluator, ciphertext *ckks.Ciphertext, iterations int, apr int) *ckks.Ciphertext {
+	x := evaluator.MultByConstNew(ciphertext, apr)
+	for i := 0; i < iterations; i++ {
+		ax := evaluator.MulNew(ciphertext, x)
+		twoMinusAX := evaluator.AddConstNew(ax, -1.0) // 2 - a * x_n
+
+		x = evaluator.MulNew(x, twoMinusAX)
+	}
+	return x
+}
