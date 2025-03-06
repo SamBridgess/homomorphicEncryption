@@ -84,8 +84,8 @@ func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr
 	}
 
 	ciphertextInvB := MakeCiphertextFromFloat(initApr, encryptedData, evaluator, ckksParams)
-	numIterations := iterations
-	for i := 0; i < numIterations; i++ {
+
+	for i := 0; i < iterations; i++ {
 		// tmp = b * x_n  (где x_n - current apr)
 		tmp := evaluator.MulNew(ciphertextB, ciphertextInvB)
 
