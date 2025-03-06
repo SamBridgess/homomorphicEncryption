@@ -2,6 +2,7 @@ package math
 
 import (
 	"errors"
+	"github.com/SamBridgess/homomorphic_encryption_lib"
 	"github.com/ldsec/lattigo/v2/ckks"
 )
 
@@ -65,6 +66,15 @@ func MakeCiphertextFromFloat(f float64, someEncData []byte, evaluator ckks.Evalu
 	zeroCiphertext, _ := MakeZeroCipherText(evaluator, ckksParams, someEncData)
 	ciphertext := evaluator.AddConstNew(zeroCiphertext, f)
 	return ciphertext
+}
+
+func TwoStepDivision(encryptedData []byte, encryptedData2 []byte, url string, ckksParams ckks.Parameters) ([]byte, error) {
+	divisorDecrypted, err := homomorphic_encryption_lib.SendComputationResultToServer(url, encryptedData2)
+	if err != nil {
+		return nil, err
+	}
+
+	return DivByConst(encryptedData, divisorDecrypted, ckksParams)
 }
 
 func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr float64, ckksParams ckks.Parameters) ([]byte, error) {
