@@ -61,52 +61,43 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int, ckksParams ckks.
 	return r, nil
 }
 
-func Sqrt(encryptedData []byte, coefficients []float64, ckksParams ckks.Parameters) ([]byte, error) {
-	evaluator := getNewEvaluator(ckksParams)
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	err := ciphertext.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	//coefficients := []float64{-0.01889609, 0.44417952, 0.51442034}
-	xSquared := evaluator.MulNew(ciphertext, ciphertext)
-	term2 := evaluator.MultByConstNew(xSquared, coefficients[2])
-	term1 := evaluator.MultByConstNew(ciphertext, coefficients[1])
-	result := evaluator.AddNew(term1, term2)
-	result = evaluator.AddConstNew(result, complex(coefficients[0], 0))
-
-	return result.MarshalBinary()
+func MakeCiphertextFromFloat(f float64, someEncData []byte, evaluator ckks.Evaluator, ckksParams ckks.Parameters) *ckks.Ciphertext {
+	zeroCiphertext, _ := MakeZeroCipherText(evaluator, ckksParams, someEncData)
+	ciphertext := evaluator.AddConstNew(zeroCiphertext, f)
+	return ciphertext
 }
 
-func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, apr int, ckksParams ckks.Parameters) ([]byte, error) {
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	ciphertext2 := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-
-	err := ciphertext.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ciphertext2.UnmarshalBinary(encryptedData2)
-	if err != nil {
-		return nil, err
-	}
-
+func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr float64, ckksParams ckks.Parameters) ([]byte, error) {
 	evaluator := getNewEvaluator(ckksParams)
 
-	inverseC2 := InverseNewton(evaluator, ciphertext2, iterations, apr)
+	ciphertextA := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
+	ciphertextB := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
 
-	return evaluator.MulNew(ciphertext, inverseC2).MarshalBinary()
-}
-
-func InverseNewton(evaluator ckks.Evaluator, ciphertext *ckks.Ciphertext, iterations int, apr int) *ckks.Ciphertext {
-	x := evaluator.MultByConstNew(ciphertext, apr)
-	for i := 0; i < iterations; i++ {
-		ax := evaluator.MulNew(ciphertext, x)
-		twoMinusAX := evaluator.AddConstNew(ax, -1.0) // 2 - a * x_n
-
-		x = evaluator.MulNew(x, twoMinusAX)
+	err := ciphertextA.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
 	}
-	return x
+
+	err = ciphertextB.UnmarshalBinary(encryptedData2)
+	if err != nil {
+		return nil, err
+	}
+
+	ciphertextInvB := MakeCiphertextFromFloat(initApr, encryptedData, evaluator, ckksParams)
+	numIterations := iterations
+	for i := 0; i < numIterations; i++ {
+		// tmp = b * x_n  (где x_n - current apr)
+		tmp := evaluator.MulNew(ciphertextB, ciphertextInvB)
+
+		//get 2 in cipher text
+		twoCiphertext := MakeCiphertextFromFloat(2.0, encryptedData, evaluator, ckksParams)
+
+		// tmp = 2 - tmp  (2 - b * x_n)
+		tmp = evaluator.SubNew(twoCiphertext, tmp)
+
+		// x_n+1 = x_n * tmp  (x_n * (2 - b * x_n))
+		ciphertextInvB = evaluator.MulNew(ciphertextInvB, tmp)
+	}
+	ciphertextResult := evaluator.MulNew(ciphertextA, ciphertextInvB)
+	return ciphertextResult.MarshalBinary()
 }
