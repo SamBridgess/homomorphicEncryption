@@ -61,6 +61,7 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int, ckksParams ckks.
 	return r, nil
 }
 
+/*
 func SqrtOnEncryptedData(ciphertextA *ckks.Ciphertext, iterations int, initialGuess float64, evaluator *ckks.Evaluator, encoder ckks.Encoder, params ckks.Parameters) *ckks.Ciphertext {
 	// Начальное приближение для корня
 	initialGuessCiphertext := MakeCiphertextFromFloat(initialGuess, evaluator, encoder, params)
@@ -83,11 +84,6 @@ func SqrtOnEncryptedData(ciphertextA *ckks.Ciphertext, iterations int, initialGu
 	return initialGuessCiphertext
 }
 
-func MakeCiphertextFromFloat(f float64, someEncData []byte, evaluator ckks.Evaluator, ckksParams ckks.Parameters) *ckks.Ciphertext {
-	zeroCiphertext, _ := MakeZeroCipherText(evaluator, ckksParams, someEncData)
-	ciphertext := evaluator.AddConstNew(zeroCiphertext, f)
-	return ciphertext
-}
 
 func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr float64, ckksParams ckks.Parameters) ([]byte, error) {
 	evaluator := getNewEvaluator(ckksParams)
@@ -123,3 +119,5 @@ func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr
 	ciphertextResult := evaluator.MulNew(ciphertextA, ciphertextInvB)
 	return ciphertextResult.MarshalBinary()
 }
+
+*/

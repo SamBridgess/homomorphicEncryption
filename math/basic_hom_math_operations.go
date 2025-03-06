@@ -101,6 +101,12 @@ func TwoStepDivision(encryptedData []byte, encryptedData2 []byte, url string, ck
 	return DivByConst(encryptedData, divisorDecrypted, ckksParams)
 }
 
+func MakeCiphertextFromFloat(f float64, someEncData []byte, evaluator ckks.Evaluator, ckksParams ckks.Parameters) *ckks.Ciphertext {
+	zeroCiphertext, _ := MakeZeroCipherText(evaluator, ckksParams, someEncData)
+	ciphertext := evaluator.AddConstNew(zeroCiphertext, f)
+	return ciphertext
+}
+
 func Inv(encryptedData []byte, steps int, ckksParams ckks.Parameters) ([]byte, error) {
 	evaluator := getNewEvaluator(ckksParams)
 
