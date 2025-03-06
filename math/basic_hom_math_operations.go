@@ -1,112 +1,114 @@
 package math
 
 import (
-	"github.com/SamBridgess/homomorphic_encryption_lib"
+	he "github.com/SamBridgess/homomorphic_encryption_lib"
 	"github.com/ldsec/lattigo/v2/ckks"
-	"github.com/ldsec/lattigo/v2/rlwe"
 )
 
-func getNewEvaluator(ckksParams ckks.Parameters) ckks.Evaluator {
-	// ignore the evaluation key
-	var evalKey rlwe.EvaluationKey
-	return ckks.NewEvaluator(ckksParams, evalKey)
+// MakeZeroCiphertext takes any encrypted data and subtracts it from itself
+// making a *ckks.Ciphertext containing 0 when decrypted
+func MakeZeroCiphertext(someEncryptedData []byte) (*ckks.Ciphertext, error) {
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+	err := ciphertext.UnmarshalBinary(someEncryptedData)
+	if err != nil {
+		return nil, err
+	}
+	return Evaluator.SubNew(ciphertext, ciphertext), nil
 }
 
-func MakeZeroCipherText(evaluator ckks.Evaluator, ckksParams ckks.Parameters, encryptedData []byte) (*ckks.Ciphertext, error) {
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	err := ciphertext.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-	return evaluator.SubNew(ciphertext, ciphertext), nil
-}
-
-func AddConst(encryptedData []byte, addValue int, ckksParams ckks.Parameters) ([]byte, error) {
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	err := ciphertext.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	evaluator := getNewEvaluator(ckksParams)
-	return evaluator.AddConstNew(ciphertext, addValue).MarshalBinary()
-}
-
-func MultByConst(encryptedData []byte, multValue int, ckksParams ckks.Parameters) ([]byte, error) {
-	evaluator := getNewEvaluator(ckksParams)
-
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	err := ciphertext.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	return evaluator.MultByConstNew(ciphertext, multValue).MarshalBinary()
-}
-
-func SumOf2(encryptedData []byte, encryptedData2 []byte, ckksParams ckks.Parameters) ([]byte, error) {
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	ciphertext2 := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-
-	err := ciphertext.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ciphertext2.UnmarshalBinary(encryptedData2)
-	if err != nil {
-		return nil, err
-	}
-
-	evaluator := getNewEvaluator(ckksParams)
-	return evaluator.AddNew(ciphertext, ciphertext2).MarshalBinary()
-}
-
-func MultOf2(encryptedData []byte, encryptedData2 []byte, ckksParams ckks.Parameters) ([]byte, error) {
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	ciphertext2 := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-
-	err := ciphertext.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ciphertext2.UnmarshalBinary(encryptedData2)
-	if err != nil {
-		return nil, err
-	}
-
-	evaluator := getNewEvaluator(ckksParams)
-	return evaluator.MulNew(ciphertext, ciphertext2).MarshalBinary()
-}
-
-func DivByConst(encryptedData []byte, divisor float64, ckksParams ckks.Parameters) ([]byte, error) {
-	evaluator := getNewEvaluator(ckksParams)
-
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	err := ciphertext.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	return evaluator.MultByConstNew(ciphertext, 1.0/divisor).MarshalBinary()
-}
-
-func TwoStepDivision(encryptedData []byte, encryptedData2 []byte, url string, ckksParams ckks.Parameters) ([]byte, error) {
-	divisorDecrypted, err := homomorphic_encryption_lib.SendComputationResultToServer(url, encryptedData2)
-	if err != nil {
-		return nil, err
-	}
-
-	return DivByConst(encryptedData, divisorDecrypted, ckksParams)
-}
-
-func MakeCiphertextFromFloat(f float64, someEncData []byte, evaluator ckks.Evaluator, ckksParams ckks.Parameters) *ckks.Ciphertext {
-	zeroCiphertext, _ := MakeZeroCipherText(evaluator, ckksParams, someEncData)
-	ciphertext := evaluator.AddConstNew(zeroCiphertext, f)
+// MakeCiphertextFromFloat takes a float64 number and any encrypted data to make a zeroCiphertext from
+// and then adds the float64 to zero which makes an encrypted representation of the initial float64 number
+func MakeCiphertextFromFloat(number float64, someEncryptedData []byte) *ckks.Ciphertext {
+	zeroCiphertext, _ := MakeZeroCiphertext(someEncryptedData)
+	ciphertext := Evaluator.AddConstNew(zeroCiphertext, number)
 	return ciphertext
 }
 
+// AddConst adds a float64 addValue to encrypted data, producing []byte of encrypted data
+// containing a sum of encryptedData data and addValue when decrypted
+func AddConst(encryptedData []byte, addValue float64) ([]byte, error) {
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+	err := ciphertext.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	return Evaluator.AddConstNew(ciphertext, addValue).MarshalBinary()
+}
+
+// MultByConst multiplies encryptedData by float64 multValue, producing []byte of encrypted data
+// containing a product of encryptedData and multValue when decrypted
+func MultByConst(encryptedData []byte, multValue float64) ([]byte, error) {
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+	err := ciphertext.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	return Evaluator.MultByConstNew(ciphertext, multValue).MarshalBinary()
+}
+
+// SumOf2 adds encryptedData to encryptedData2, producing []byte of encrypted data
+// containing a sum of encryptedData data and encryptedData2 when decrypted
+func SumOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+	ciphertext2 := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+
+	err := ciphertext.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	err = ciphertext2.UnmarshalBinary(encryptedData2)
+	if err != nil {
+		return nil, err
+	}
+
+	return Evaluator.AddNew(ciphertext, ciphertext2).MarshalBinary()
+}
+
+// MultOf2 multiplies encryptedData by encryptedData2, producing []byte of encrypted data
+// containing a product of encryptedData and encryptedData2 when decrypted
+func MultOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+	ciphertext2 := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+
+	err := ciphertext.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	err = ciphertext2.UnmarshalBinary(encryptedData2)
+	if err != nil {
+		return nil, err
+	}
+
+	return Evaluator.MulNew(ciphertext, ciphertext2).MarshalBinary()
+}
+
+// DivByConst divides encryptedDataDividend by float64 encryptedDataDivisor, producing []byte of
+// encrypted data containing a quotient of encryptedDataDividend and encryptedDataDivisor
+// when decrypted
+func DivByConst(encryptedDataDividend []byte, encryptedDataDivisor float64) ([]byte, error) {
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+	err := ciphertext.UnmarshalBinary(encryptedDataDividend)
+	if err != nil {
+		return nil, err
+	}
+
+	return Evaluator.MultByConstNew(ciphertext, 1.0/encryptedDataDivisor).MarshalBinary()
+}
+
+func TwoStepDivision(encryptedData []byte, encryptedData2 []byte, url string) ([]byte, error) {
+	divisorDecrypted, err := he.SendComputationResultToServer(url, encryptedData2)
+	if err != nil {
+		return nil, err
+	}
+
+	return DivByConst(encryptedData, divisorDecrypted)
+}
+
+/*
 func Inv(encryptedData []byte, steps int, ckksParams ckks.Parameters) ([]byte, error) {
 	evaluator := getNewEvaluator(ckksParams)
 
@@ -119,7 +121,6 @@ func Inv(encryptedData []byte, steps int, ckksParams ckks.Parameters) ([]byte, e
 	return evaluator.InverseNew(ciphertext, steps).MarshalBinary()
 }
 
-/*
 func Sqrt(encryptedData []byte, url string, ckksParams ckks.Parameters) ([]byte, error) {
 	ciphertext_a := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
 	err := ciphertext_a.UnmarshalBinary(encryptedData)
@@ -145,6 +146,4 @@ func Sqrt(encryptedData []byte, url string, ckksParams ckks.Parameters) ([]byte,
 		}
 	}
 }
-
-
 */

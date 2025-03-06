@@ -5,23 +5,22 @@ import (
 	"github.com/ldsec/lattigo/v2/ckks"
 )
 
-func ArraySum(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, error) {
+// ArraySum returns the encrypted sum of all elements of passed array in []byte
+func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 	if len(encryptedDataArray) == 0 {
 		return nil, errors.New("cannot use empty array")
 	}
 
-	evaluator := getNewEvaluator(ckksParams)
-
-	sumCiphertext, err := MakeZeroCipherText(evaluator, ckksParams, encryptedDataArray[0])
+	sumCiphertext, err := MakeZeroCiphertext(encryptedDataArray[0])
 	if err != nil {
 		return nil, err
 	}
 
 	for _, encryptedData := range encryptedDataArray {
-		ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
+		ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 
 		err := ciphertext.UnmarshalBinary(encryptedData)
-		evaluator.Add(sumCiphertext, ciphertext, sumCiphertext)
+		Evaluator.Add(sumCiphertext, ciphertext, sumCiphertext)
 		if err != nil {
 			return nil, err
 		}
@@ -30,12 +29,11 @@ func ArraySum(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, 
 	return sumCiphertext.MarshalBinary()
 }
 
-func Mean(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, error) {
-	evaluator := getNewEvaluator(ckksParams)
+// ArrayMean calculates the encrypted mean of all elements of passed array in []byte
+func ArrayMean(encryptedDataArray [][]byte) ([]byte, error) {
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 
-	ciphertext := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-
-	sum, err := ArraySum(encryptedDataArray, ckksParams)
+	sum, err := ArraySum(encryptedDataArray)
 	if err != nil {
 		return nil, err
 	}
@@ -45,15 +43,17 @@ func Mean(encryptedDataArray [][]byte, ckksParams ckks.Parameters) ([]byte, erro
 		return nil, err
 	}
 
-	return evaluator.MultByConstNew(ciphertext, 1.0/float64(len(encryptedDataArray))).MarshalBinary()
+	return Evaluator.MultByConstNew(ciphertext, 1.0/float64(len(encryptedDataArray))).MarshalBinary()
 }
 
-func MovingAverage(encryptedDataArray [][]byte, windowSize int, ckksParams ckks.Parameters) ([][]byte, error) {
+// MovingAverage returns an array, containing len(encryptedDataArray) - windowSize elements,
+// each representing a calculated mean of numbers within a shifting window of size windowSize
+func MovingAverage(encryptedDataArray [][]byte, windowSize int) ([][]byte, error) {
 	movingArrayLen := len(encryptedDataArray) - windowSize
 	r := make([][]byte, movingArrayLen)
 	for i := 0; i < movingArrayLen; i++ {
 		var err error
-		r[i], err = Mean(encryptedDataArray[i:i+windowSize], ckksParams)
+		r[i], err = ArrayMean(encryptedDataArray[i : i+windowSize])
 		if err != nil {
 			return nil, err
 		}
@@ -83,7 +83,6 @@ func SqrtOnEncryptedData(ciphertextA *ckks.Ciphertext, iterations int, initialGu
 
 	return initialGuessCiphertext
 }
-
 
 func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr float64, ckksParams ckks.Parameters) ([]byte, error) {
 	evaluator := getNewEvaluator(ckksParams)
@@ -119,5 +118,4 @@ func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr
 	ciphertextResult := evaluator.MulNew(ciphertextA, ciphertextInvB)
 	return ciphertextResult.MarshalBinary()
 }
-
 */

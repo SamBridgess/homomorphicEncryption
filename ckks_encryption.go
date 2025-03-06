@@ -4,16 +4,7 @@ import (
 	"github.com/ldsec/lattigo/v2/ckks"
 )
 
-var CkksParams ckks.Parameters
-
-func init() {
-	var err error
-	CkksParams, err = ckks.NewParametersFromLiteral(ckks.PN14QP438)
-	if err != nil {
-		panic(err)
-	}
-}
-
+// EncryptCKKS encrypts float64 data into []byte using CKKS algorithm
 func EncryptCKKS(data float64) ([]byte, error) {
 	encoder := ckks.NewEncoder(CkksParams)
 	encryptor := ckks.NewEncryptor(CkksParams, Keys.Pk)
@@ -25,6 +16,7 @@ func EncryptCKKS(data float64) ([]byte, error) {
 	return ciphertext.MarshalBinary()
 }
 
+// DecryptCKKS decrypts data encrypted with CKKS algorithm into a float64
 func DecryptCKKS(data []byte) (float64, error) {
 	decryptor := ckks.NewDecryptor(CkksParams, Keys.Sk)
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
