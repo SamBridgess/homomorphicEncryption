@@ -2,7 +2,6 @@ package math
 
 import (
 	"errors"
-	"github.com/SamBridgess/homomorphic_encryption_lib"
 	"github.com/ldsec/lattigo/v2/ckks"
 )
 
@@ -62,19 +61,32 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int, ckksParams ckks.
 	return r, nil
 }
 
+func SqrtOnEncryptedData(ciphertextA *ckks.Ciphertext, iterations int, initialGuess float64, evaluator *ckks.Evaluator, encoder ckks.Encoder, params ckks.Parameters) *ckks.Ciphertext {
+	// Начальное приближение для корня
+	initialGuessCiphertext := MakeCiphertextFromFloat(initialGuess, evaluator, encoder, params)
+
+	// Итеративное уточнение приближения
+	for i := 0; i < iterations; i++ {
+		// Вычисление a / x_n
+		ciphertextRatio := evaluator.DivNew(ciphertextA, initialGuessCiphertext)
+
+		// Вычисление x_n + (a / x_n)
+		ciphertextSum := evaluator.AddNew(initialGuessCiphertext, ciphertextRatio)
+
+		// Вычисление (x_n + (a / x_n)) / 2
+		ciphertextSqrt := evaluator.MultByConstNew(ciphertextSum, 0.5)
+
+		// Обновление приближения
+		initialGuessCiphertext = ciphertextSqrt
+	}
+
+	return initialGuessCiphertext
+}
+
 func MakeCiphertextFromFloat(f float64, someEncData []byte, evaluator ckks.Evaluator, ckksParams ckks.Parameters) *ckks.Ciphertext {
 	zeroCiphertext, _ := MakeZeroCipherText(evaluator, ckksParams, someEncData)
 	ciphertext := evaluator.AddConstNew(zeroCiphertext, f)
 	return ciphertext
-}
-
-func TwoStepDivision(encryptedData []byte, encryptedData2 []byte, url string, ckksParams ckks.Parameters) ([]byte, error) {
-	divisorDecrypted, err := homomorphic_encryption_lib.SendComputationResultToServer(url, encryptedData2)
-	if err != nil {
-		return nil, err
-	}
-
-	return DivByConst(encryptedData, divisorDecrypted, ckksParams)
 }
 
 func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr float64, ckksParams ckks.Parameters) ([]byte, error) {
