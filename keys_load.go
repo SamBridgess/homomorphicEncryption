@@ -10,11 +10,13 @@ import (
 
 var Keys KeyPair
 
+// KeyPair Struct containing rlwe.SecretKey and rlwe.PublicKey
 type KeyPair struct {
 	Sk *rlwe.SecretKey
 	Pk *rlwe.PublicKey
 }
 
+// NewKeyPair Creates a new KeyPair struct
 func NewKeyPair(Sk *rlwe.SecretKey, Pk *rlwe.PublicKey) KeyPair {
 	pair := KeyPair{
 		Sk: Sk,
@@ -23,29 +25,32 @@ func NewKeyPair(Sk *rlwe.SecretKey, Pk *rlwe.PublicKey) KeyPair {
 	return pair
 }
 
-func GenKeysCKKS() {
-	Keys = NewKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
+// GenKeysCKKS Generates new KeyPair
+func GenKeysCKKS() KeyPair {
+	return NewKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
 }
 
-func LoadOrGenerateKeys(paramsFile string) {
-	if _, err := os.Stat(paramsFile); os.IsNotExist(err) {
+func LoadOrGenerateKeys(keysFileLocation string) {
+	if _, err := os.Stat(keysFileLocation); os.IsNotExist(err) {
 		fmt.Println("Keys file not found. Generating new keys")
-		GenerateAndSaveKeys(paramsFile)
+		GenerateAndSaveKeys(keysFileLocation)
 	} else {
 		fmt.Println("Loading keys from file...")
-		LoadKeys(paramsFile)
+		LoadKeys(keysFileLocation)
 	}
 }
 
-func GenerateAndSaveKeys(paramsFile string) {
-	GenKeysCKKS()
+// GenerateAndSaveKeys Generates new KeyPair and saves it to keysFileLocation
+// json file
+func GenerateAndSaveKeys(keysFileLocation string) {
+	Keys = GenKeysCKKS()
 
 	data, err := json.Marshal(Keys)
 	if err != nil {
 		panic(err)
 	}
 
-	err = os.WriteFile(paramsFile, data, 0644)
+	err = os.WriteFile(keysFileLocation, data, 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -53,8 +58,9 @@ func GenerateAndSaveKeys(paramsFile string) {
 	fmt.Println("Keys generated and saved")
 }
 
-func LoadKeys(paramsFile string) {
-	data, err := os.ReadFile(paramsFile)
+// LoadKeys Loads KeyPair from keysFileLocation json file
+func LoadKeys(keysFileLocation string) {
+	data, err := os.ReadFile(keysFileLocation)
 	if err != nil {
 		panic(err)
 	}

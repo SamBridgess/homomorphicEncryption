@@ -10,6 +10,7 @@ import (
 	"net/http"
 )
 
+// HttpsServer Basic https server configuration
 var (
 	HttpsServer = &http.Client{
 		Transport: &http.Transport{
@@ -30,6 +31,7 @@ func ServerHandler() *gin.Engine {
 // StartSecureServer Start HTTPS server. Port must be passed as is, without ':'
 func StartSecureServer(port string, certFile string, keyFile string) {
 	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
 
 	r.POST("/decrypt_computations", handleDecrypt)
 	r.GET("/get_ckks_params", handleGetCkksParams)
@@ -101,6 +103,7 @@ func SendComputationResultToServer(url string, encryptedResult []byte) (float64,
 	return response.DecryptedResult, nil
 }
 
+// handleGetCkksParams A request handler for CkksParams retrieving
 func handleGetCkksParams(c *gin.Context) {
 	paramsJSON, err := json.Marshal(CkksParams)
 	if err != nil {
@@ -110,6 +113,7 @@ func handleGetCkksParams(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"ckks_params": string(paramsJSON)})
 }
 
+// handleDecrypt A request handler for decrypting a result of client calculations
 func handleDecrypt(c *gin.Context) {
 	var req struct {
 		EncryptedResult []byte `json:"encrypted_result"`

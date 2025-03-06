@@ -5,7 +5,7 @@ import (
 	"github.com/ldsec/lattigo/v2/ckks"
 )
 
-// MakeZeroCiphertext takes any encrypted data and subtracts it from itself
+// MakeZeroCiphertext Takes any encrypted data and subtracts it from itself
 // making a *ckks.Ciphertext containing 0 when decrypted
 func MakeZeroCiphertext(someEncryptedData []byte) (*ckks.Ciphertext, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
@@ -16,7 +16,7 @@ func MakeZeroCiphertext(someEncryptedData []byte) (*ckks.Ciphertext, error) {
 	return Evaluator.SubNew(ciphertext, ciphertext), nil
 }
 
-// MakeCiphertextFromFloat takes a float64 number and any encrypted data to make a zeroCiphertext from
+// MakeCiphertextFromFloat Takes a float64 number and any encrypted data to make a zeroCiphertext from
 // and then adds the float64 to zero which makes an encrypted representation of the initial float64 number
 func MakeCiphertextFromFloat(number float64, someEncryptedData []byte) *ckks.Ciphertext {
 	zeroCiphertext, _ := MakeZeroCiphertext(someEncryptedData)
@@ -24,7 +24,7 @@ func MakeCiphertextFromFloat(number float64, someEncryptedData []byte) *ckks.Cip
 	return ciphertext
 }
 
-// AddConst adds a float64 addValue to encrypted data, producing []byte of encrypted data
+// AddConst Adds a float64 addValue to encrypted data, producing []byte of encrypted data
 // containing a sum of encryptedData data and addValue when decrypted
 func AddConst(encryptedData []byte, addValue float64) ([]byte, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
@@ -36,7 +36,7 @@ func AddConst(encryptedData []byte, addValue float64) ([]byte, error) {
 	return Evaluator.AddConstNew(ciphertext, addValue).MarshalBinary()
 }
 
-// MultByConst multiplies encryptedData by float64 multValue, producing []byte of encrypted data
+// MultByConst Multiplies encryptedData by float64 multValue, producing []byte of encrypted data
 // containing a product of encryptedData and multValue when decrypted
 func MultByConst(encryptedData []byte, multValue float64) ([]byte, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
@@ -48,7 +48,7 @@ func MultByConst(encryptedData []byte, multValue float64) ([]byte, error) {
 	return Evaluator.MultByConstNew(ciphertext, multValue).MarshalBinary()
 }
 
-// SumOf2 adds encryptedData to encryptedData2, producing []byte of encrypted data
+// SumOf2 Adds encryptedData to encryptedData2, producing []byte of encrypted data
 // containing a sum of encryptedData data and encryptedData2 when decrypted
 func SumOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
@@ -67,7 +67,7 @@ func SumOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 	return Evaluator.AddNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
-// MultOf2 multiplies encryptedData by encryptedData2, producing []byte of encrypted data
+// MultOf2 Multiplies encryptedData by encryptedData2, producing []byte of encrypted data
 // containing a product of encryptedData and encryptedData2 when decrypted
 func MultOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
@@ -86,7 +86,7 @@ func MultOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 	return Evaluator.MulNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
-// DivByConst divides encryptedDataDividend by float64 encryptedDataDivisor, producing []byte of
+// DivByConst Divides encryptedDataDividend by float64 encryptedDataDivisor, producing []byte of
 // encrypted data containing a quotient of encryptedDataDividend and encryptedDataDivisor
 // when decrypted
 func DivByConst(encryptedDataDividend []byte, encryptedDataDivisor float64) ([]byte, error) {

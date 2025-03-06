@@ -4,7 +4,7 @@ import "github.com/ldsec/lattigo/v2/ckks"
 
 var CkksParams ckks.Parameters
 
-// SetupServer loads secret and public keys from file or generates new keys
+// SetupServer Loads secret and public keys from file or generates new keys
 // and saves them to file if such location doesn't exist.
 // Sets up CkksParams on server side
 func SetupServer(keysFileLocation string) {

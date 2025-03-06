@@ -5,7 +5,7 @@ import (
 	"github.com/ldsec/lattigo/v2/ckks"
 )
 
-// ArraySum returns the encrypted sum of all elements of passed array in []byte
+// ArraySum Returns the encrypted sum of all elements of passed array in []byte
 func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 	if len(encryptedDataArray) == 0 {
 		return nil, errors.New("cannot use empty array")
@@ -29,7 +29,7 @@ func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 	return sumCiphertext.MarshalBinary()
 }
 
-// ArrayMean calculates the encrypted mean of all elements of passed array in []byte
+// ArrayMean Calculates the encrypted mean of all elements of passed array in []byte
 func ArrayMean(encryptedDataArray [][]byte) ([]byte, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 
@@ -46,7 +46,7 @@ func ArrayMean(encryptedDataArray [][]byte) ([]byte, error) {
 	return Evaluator.MultByConstNew(ciphertext, 1.0/float64(len(encryptedDataArray))).MarshalBinary()
 }
 
-// MovingAverage returns an array, containing len(encryptedDataArray) - windowSize elements,
+// MovingAverage Returns an array, containing len(encryptedDataArray) - windowSize elements,
 // each representing a calculated mean of numbers within a shifting window of size windowSize
 func MovingAverage(encryptedDataArray [][]byte, windowSize int) ([][]byte, error) {
 	movingArrayLen := len(encryptedDataArray) - windowSize

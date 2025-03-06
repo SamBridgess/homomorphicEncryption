@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// DBConnectionInfo Struct containing all the info needed to connect to a database
 type DBConnectionInfo struct {
 	Host     string
 	Port     int
@@ -13,6 +14,7 @@ type DBConnectionInfo struct {
 	DBName   string
 }
 
+// NewDBConnectionInfo Creates new DBConnectionInfo struct
 func NewDBConnectionInfo(host string, port int, user string, password string, dbname string) DBConnectionInfo {
 	info := DBConnectionInfo{
 		Host:     host,
@@ -24,6 +26,7 @@ func NewDBConnectionInfo(host string, port int, user string, password string, db
 	return info
 }
 
+// OpenConnection Opens connection to a designated database
 func OpenConnection(info DBConnectionInfo) (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", info.Host, info.Port, info.User, info.Password, info.DBName)
 	return sql.Open("postgres", psqlInfo)
