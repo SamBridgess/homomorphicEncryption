@@ -7,7 +7,7 @@ import (
 // EncryptCKKS Encrypts float64 data into []byte using CKKS algorithm
 func EncryptCKKS(data float64) ([]byte, error) {
 	encoder := ckks.NewEncoder(CkksParams)
-	encryptor := ckks.NewEncryptor(CkksParams, Keys.Pk)
+	encryptor := ckks.NewEncryptor(CkksParams, CkksKeys.Pk)
 
 	plaintext := ckks.NewPlaintext(CkksParams, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 	encoder.Encode([]float64{data}, plaintext, CkksParams.LogSlots())
@@ -18,7 +18,7 @@ func EncryptCKKS(data float64) ([]byte, error) {
 
 // DecryptCKKS Decrypts data encrypted with CKKS algorithm into a float64
 func DecryptCKKS(data []byte) (float64, error) {
-	decryptor := ckks.NewDecryptor(CkksParams, Keys.Sk)
+	decryptor := ckks.NewDecryptor(CkksParams, CkksKeys.Sk)
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 	err := ciphertext.UnmarshalBinary(data)
 	if err != nil {
