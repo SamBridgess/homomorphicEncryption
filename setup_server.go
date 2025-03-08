@@ -12,12 +12,12 @@ var BfvParams bfv.Parameters
 // and saves them to file if such location doesn't exist.
 // Sets up CkksParams on server side
 
-func SetupServer(keysFileLocation string) {
+func SetupServer(ckksKeysFileLocation string, bfvKeysLocation string) {
 	var err error
 	CkksParams, err = ckks.NewParametersFromLiteral(ckks.PN14QP438)
 	BfvParams, err = bfv.NewParametersFromLiteral(bfv.PN14QP438)
 	if err != nil {
 		panic(err)
 	}
-	LoadOrGenerateKeys(keysFileLocation)
+	LoadOrGenerateKeys(ckksKeysFileLocation)
 }

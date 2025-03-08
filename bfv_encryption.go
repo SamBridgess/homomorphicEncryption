@@ -7,7 +7,7 @@ import (
 // EncryptBFV Encrypts float64 data into []byte using BVF algorithm
 func EncryptBFV(data int64) ([]byte, error) {
 	encoder := bfv.NewEncoder(BfvParams)
-	encryptor := bfv.NewEncryptor(BfvParams, Keys.Pk)
+	encryptor := bfv.NewEncryptor(BfvParams, BfvKeys.Pk)
 
 	plaintext := bfv.NewPlaintext(BfvParams)
 	//encoder.Encode([]float64{data}, plaintext, CkksParams.LogSlots())
@@ -19,7 +19,7 @@ func EncryptBFV(data int64) ([]byte, error) {
 
 // DecryptBFV Decrypts data encrypted with BVF algorithm into an int64
 func DecryptBFV(data []byte) (int64, error) {
-	decryptor := bfv.NewDecryptor(BfvParams, Keys.Sk)
+	decryptor := bfv.NewDecryptor(BfvParams, BfvKeys.Sk)
 	ciphertext := bfv.NewCiphertext(BfvParams, 1)
 	err := ciphertext.UnmarshalBinary(data)
 	if err != nil {
