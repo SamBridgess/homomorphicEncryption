@@ -36,7 +36,7 @@ func StartSecureServer(port string, certFile string, keyFile string) {
 	r.POST("/decrypt_computations", handleDecrypt)
 	r.GET("/get_ckks_params", handleGetCkksParams)
 
-	r.GET("/decrypt_computations_bfv", handleDecryptBfv)
+	r.POST("/decrypt_computations_bfv", handleDecryptBfv)
 
 	server := &http.Server{
 		Addr:    ":" + port,
