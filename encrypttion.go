@@ -15,13 +15,13 @@ const (
 	BFV
 )
 
-func callMethod(pkg string, method string, params ...interface{}) []reflect.Value {
-	var pkgValue reflect.Value
+func callFunction(pkg string, function string, params ...interface{}) []reflect.Value {
+	var funcValue reflect.Value
 	switch pkg {
 	case "ckks":
-		pkgValue = reflect.ValueOf(ckks.NewEncoder(CkksParams))
+		funcValue = reflect.ValueOf(ckks.NewEncoder)
 	case "bfv":
-		pkgValue = reflect.ValueOf(bfv.NewEncoder(BfvParams))
+		funcValue = reflect.ValueOf(bfv.NewEncoder)
 	default:
 		panic("unsupported package")
 	}
@@ -31,11 +31,7 @@ func callMethod(pkg string, method string, params ...interface{}) []reflect.Valu
 		in[i] = reflect.ValueOf(param)
 	}
 
-	methodValue := pkgValue.MethodByName(method)
-	if !methodValue.IsValid() {
-		panic(fmt.Sprintf("Method %s not found in package %s", method, pkg))
-	}
-	return methodValue.Call(in)
+	return funcValue.Call(in)
 }
 
 func Encrypt(method EncryptionMethod, data float64) ([]byte, error) {
@@ -53,7 +49,7 @@ func Encrypt(method EncryptionMethod, data float64) ([]byte, error) {
 		return nil, fmt.Errorf("unsupported encryption method")
 	}
 
-	encoder := callMethod(pkg, "NewEncoder", params)[0].Interface()
+	encoder := callFunction(pkg, "NewEncoder", params)[0].Interface()
 
 	encodeMethod := reflect.ValueOf(encoder).MethodByName("Encode")
 	plaintext := encodeMethod.Call([]reflect.Value{
@@ -61,7 +57,7 @@ func Encrypt(method EncryptionMethod, data float64) ([]byte, error) {
 		reflect.ValueOf(params),
 	})[0].Interface()
 
-	encryptor := callMethod(pkg, "NewEncryptor", params, Keys.Pk)[0].Interface()
+	encryptor := callFunction(pkg, "NewEncryptor", params, Keys.Pk)[0].Interface()
 	encryptMethod := reflect.ValueOf(encryptor).MethodByName("EncryptNew")
 	ciphertext := encryptMethod.Call([]reflect.Value{
 		reflect.ValueOf(plaintext),
