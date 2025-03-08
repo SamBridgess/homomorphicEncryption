@@ -36,6 +36,8 @@ func StartSecureServer(port string, certFile string, keyFile string) {
 	r.POST("/decrypt_computations", handleDecrypt)
 	r.GET("/get_ckks_params", handleGetCkksParams)
 
+	r.GET("/decrypt_computations_bfv", handleDecryptBfv)
+
 	server := &http.Server{
 		Addr:    ":" + port,
 		Handler: r,
@@ -124,6 +126,25 @@ func handleDecrypt(c *gin.Context) {
 	}
 
 	decResult, err := DecryptCKKS(req.EncryptedResult)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
+}
+
+// handleDecrypt A request handler for decrypting a result of client calculations
+func handleDecryptBfv(c *gin.Context) {
+	var req struct {
+		EncryptedResult []byte `json:"encrypted_result"`
+	}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	decResult, err := DecryptBFV(req.EncryptedResult)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
