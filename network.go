@@ -113,7 +113,7 @@ func GetBFVParamsFromServer(serverURL string) (bfv.Parameters, error) {
 	return bfvParams, nil
 }
 
-// SendComputationResultToServer_ckks Send computation results to server and get a decrypted result
+// SendComputationResultToServer_ckks Send CKKS computation results to server and get a decrypted result
 func SendComputationResultToServer_ckks(url string, encryptedResult []byte) (float64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
 	if err != nil {
@@ -138,7 +138,7 @@ func SendComputationResultToServer_ckks(url string, encryptedResult []byte) (flo
 	return response.DecryptedResult, nil
 }
 
-// SendComputationResultToServer_bfv Send computation results to server and get a decrypted result
+// SendComputationResultToServer_bfv Send BFV computation results to server and get a decrypted result
 func SendComputationResultToServer_bfv(url string, encryptedResult []byte) (int64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
 	if err != nil {
@@ -183,7 +183,7 @@ func handleGetBfvParams(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"bfv_params": string(paramsJSON)})
 }
 
-// handleDecrypt A request handler for decrypting a result of client calculations
+// handleDecrypt A request handler for decrypting a result of client calculations with CKKS
 func handleDecryptCkks(c *gin.Context) {
 	var req struct {
 		EncryptedResult []byte `json:"encrypted_result"`
@@ -202,7 +202,7 @@ func handleDecryptCkks(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
 }
 
-// handleDecryptBfv A request handler for decrypting a result of client calculations
+// handleDecryptBfv A request handler for decrypting a result of client calculations with BFV
 func handleDecryptBfv(c *gin.Context) {
 	var req struct {
 		EncryptedResult []byte `json:"encrypted_result"`
