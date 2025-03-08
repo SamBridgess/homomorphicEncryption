@@ -34,7 +34,7 @@ func StartSecureServer(port string, certFile string, keyFile string) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
-	r.POST("/decrypt_computations", handleDecryptCkks)
+	r.POST("/decrypt_computations_ckks", handleDecryptCkks)
 	r.GET("/get_ckks_params", handleGetCkksParams)
 
 	r.POST("/decrypt_computations_bfv", handleDecryptBfv)
