@@ -1,58 +1,36 @@
 package homomorphic_encryption_lib
 
 import (
-	"fmt"
 	"github.com/ldsec/lattigo/v2/bfv"
-	"github.com/ldsec/lattigo/v2/ckks"
-	"reflect"
 )
 
-var methodMap = map[string]map[string]reflect.Value{}
+// EncryptBFV Encrypts float64 data into []byte using BVF algorithm
+func EncryptBFV(data []int64) ([]byte, error) {
+	encoder := bfv.NewEncoder(BfvParams)
+	encryptor := bfv.NewEncryptor(BfvParams, Keys.Pk)
 
-func init() {
-	registerPackage("ckks", ckks.NewParameters)
-	registerPackage("bfv", bfv.NewParameters)
+	plaintext := bfv.NewPlaintext(BfvParams)
+	//encoder.Encode([]float64{data}, plaintext, CkksParams.LogSlots())
+	encoder.EncodeInt(data, plaintext)
+
+	ciphertext := encryptor.EncryptNew(plaintext)
+	return ciphertext.MarshalBinary()
 }
 
-// Функция регистрации всех методов из пакета
-func registerPackage(name string, instance interface{}) {
-	// Получаем объект через reflect
-	typ := reflect.TypeOf(instance)
-	value := reflect.ValueOf(instance)
+// DecryptBFV Decrypts data encrypted with BVF algorithm into a float64
+func DecryptBFV(data []byte) (int64, error) {
+	decryptor := bfv.NewDecryptor(BfvParams, Keys.Sk)
 
-	// Создаем вложенную мапу для методов пакета
-	methodMap[name] = make(map[string]reflect.Value)
-
-	for i := 0; i < typ.NumMethod(); i++ {
-		method := typ.Method(i)
-		methodMap[name][method.Name] = value.MethodByName(method.Name)
-		fmt.Printf("Registered method: %s.%s\n", name, method.Name)
+	ciphertext := bfv.NewCiphertext(BfvParams, 1)
+	err := ciphertext.UnmarshalBinary(data)
+	if err != nil {
+		return 0, err
 	}
-}
 
-func reflectionCall(algo string) {
+	plaintext := decryptor.DecryptNew(ciphertext)
 
-}
+	encoder := bfv.NewEncoder(BfvParams)
+	decoded := encoder.DecodeIntNew(plaintext)
 
-func EncryptHom(data float64, algo string) ([]byte, error) {
-
-	encoder := ckks.NewEncoder(CkksParams)
-	encryptor := ckks.NewEncryptor(CkksParams, Keys.Pk)
-
-	plaintext := ckks.NewPlaintext(CkksParams, CkksParams.MaxLevel(), CkksParams.DefaultScale())
-	encoder.Encode([]float64{data}, plaintext, CkksParams.LogSlots())
-
-	ciphertext := encryptor.EncryptNew(plaintext)
-	return ciphertext.MarshalBinary()
-}
-
-func EncryptHom2(data float64) ([]byte, error) {
-	encoder := ckks.NewEncoder(CkksParams)
-	encryptor := ckks.NewEncryptor(CkksParams, Keys.Pk)
-
-	plaintext := ckks.NewPlaintext(CkksParams, CkksParams.MaxLevel(), CkksParams.DefaultScale())
-	encoder.Encode([]float64{data}, plaintext, CkksParams.LogSlots())
-
-	ciphertext := encryptor.EncryptNew(plaintext)
-	return ciphertext.MarshalBinary()
+	return decoded[0], nil
 }
