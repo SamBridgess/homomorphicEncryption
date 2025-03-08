@@ -3,7 +3,7 @@ package homomorphic_encryption_lib
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ldsec/lattigo/v2/ckks"
+	"github.com/ldsec/lattigo/v2/bfv"
 	"github.com/ldsec/lattigo/v2/rlwe"
 	"os"
 )
@@ -27,7 +27,7 @@ func NewKeyPair(Sk *rlwe.SecretKey, Pk *rlwe.PublicKey) KeyPair {
 
 // GenKeysCKKS Generates new KeyPair
 func GenKeysCKKS() KeyPair {
-	return NewKeyPair(ckks.NewKeyGenerator(CkksParams).GenKeyPair())
+	return NewKeyPair(bfv.NewKeyGenerator(BfvParams).GenKeyPair())
 }
 
 func LoadOrGenerateKeys(keysFileLocation string) {
