@@ -44,6 +44,8 @@ func GenKeysBFV() KeyPair {
 	return NewKeyPair(bfv.NewKeyGenerator(BfvParams).GenKeyPair())
 }
 
+// LoadOrGenerateKeys checks if keys file exists and if it does - loads it
+// If it doesn't - generates a new keys file for specified method
 func LoadOrGenerateKeys(keysFileLocation string, method Method) {
 	if _, err := os.Stat(keysFileLocation); os.IsNotExist(err) {
 		fmt.Printf("Keys file '%s' not found. Generating new keys", keysFileLocation)
