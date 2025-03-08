@@ -1,7 +1,6 @@
 package math
 
 import (
-	he "github.com/SamBridgess/homomorphic_encryption_lib"
 	"github.com/ldsec/lattigo/v2/ckks"
 )
 
@@ -99,6 +98,7 @@ func DivByConst(encryptedDataDividend []byte, encryptedDataDivisor float64) ([]b
 	return Evaluator.MultByConstNew(ciphertext, 1.0/encryptedDataDivisor).MarshalBinary()
 }
 
+/*
 func TwoStepDivision(encryptedData []byte, encryptedData2 []byte, url string) ([]byte, error) {
 	divisorDecrypted, err := he.SendComputationResultToServer(url, encryptedData2)
 	if err != nil {
@@ -108,7 +108,7 @@ func TwoStepDivision(encryptedData []byte, encryptedData2 []byte, url string) ([
 	return DivByConst(encryptedData, divisorDecrypted)
 }
 
-/*
+
 func Inv(encryptedData []byte, steps int, ckksParams ckks.Parameters) ([]byte, error) {
 	evaluator := getNewEvaluator(ckksParams)
 
