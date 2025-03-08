@@ -105,6 +105,30 @@ func SendComputationResultToServer(url string, encryptedResult []byte) (float64,
 	return response.DecryptedResult, nil
 }
 
+func SendComputationResultToServer_bfv(url string, encryptedResult []byte) (int64, error) {
+	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
+	if err != nil {
+		return 0.0, err
+	}
+
+	client := HttpsServer
+
+	resp, err := client.Post(url, "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		return 0.0, err
+	}
+	defer resp.Body.Close()
+
+	var response struct {
+		DecryptedResult int64 `json:"decrypted_result"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return 0.0, err
+	}
+
+	return response.DecryptedResult, nil
+}
+
 // handleGetCkksParams A request handler for CkksParams retrieving
 func handleGetCkksParams(c *gin.Context) {
 	paramsJSON, err := json.Marshal(CkksParams)
@@ -134,7 +158,7 @@ func handleDecrypt(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
 }
 
-// handleDecrypt A request handler for decrypting a result of client calculations
+// handleDecryptBfv A request handler for decrypting a result of client calculations
 func handleDecryptBfv(c *gin.Context) {
 	var req struct {
 		EncryptedResult []byte `json:"encrypted_result"`
