@@ -2,7 +2,6 @@ package ckksMath
 
 import (
 	"errors"
-	"github.com/ldsec/lattigo/v2/ckks"
 )
 
 // ArraySum Returns the encrypted sum of all elements of passed array in []byte
@@ -17,13 +16,12 @@ func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 	}
 
 	for _, encryptedData := range encryptedDataArray {
-		ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
-
-		err := ciphertext.UnmarshalBinary(encryptedData)
-		CkksEvaluator.Add(sumCiphertext, ciphertext, sumCiphertext)
+		ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
 		if err != nil {
 			return nil, err
 		}
+
+		CkksEvaluator.Add(sumCiphertext, ciphertext, sumCiphertext)
 	}
 
 	return sumCiphertext.MarshalBinary()
@@ -31,14 +29,12 @@ func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 
 // ArrayMean Calculates the encrypted mean of all elements of passed array in []byte
 func ArrayMean(encryptedDataArray [][]byte) ([]byte, error) {
-	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
-
 	sum, err := ArraySum(encryptedDataArray)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ciphertext.UnmarshalBinary(sum)
+	ciphertext, err := unmarshallIntoNewCiphertext(sum)
 	if err != nil {
 		return nil, err
 	}
@@ -59,6 +55,46 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int) ([][]byte, error
 		}
 	}
 	return r, nil
+}
+
+func Variance(encryptedDataArray [][]byte) ([]byte, error) {
+	if len(encryptedDataArray) == 0 {
+		return nil, errors.New("cannot use empty array")
+	}
+
+	mean, err := ArrayMean(encryptedDataArray)
+	if err != nil {
+		return nil, err
+	}
+
+	sumCiphertext, err := MakeZeroCiphertext(encryptedDataArray[0])
+	if err != nil {
+		return nil, err
+	}
+
+	for _, encryptedData := range encryptedDataArray {
+		sub, err := Subtract(encryptedData, mean)
+		if err != nil {
+			return nil, err
+		}
+
+		pow, err := Pow2(sub)
+		if err != nil {
+			return nil, err
+		}
+
+		ciphertextPow, err := unmarshallIntoNewCiphertext(pow)
+		if err != nil {
+			return nil, err
+		}
+
+		CkksEvaluator.Add(sumCiphertext, ciphertextPow, sumCiphertext)
+	}
+
+	sumSquaredDiff, err := sumCiphertext.MarshalBinary()
+	result, err := DivByConst(sumSquaredDiff, float64(len(encryptedDataArray)))
+
+	return result, nil
 }
 
 /*
