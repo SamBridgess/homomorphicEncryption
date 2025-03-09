@@ -2,7 +2,6 @@ package ckksMath
 
 import (
 	"errors"
-	"github.com/ldsec/lattigo/v2/ckks"
 )
 
 // ArraySum Returns the encrypted sum of all elements of passed array in []byte
@@ -103,7 +102,12 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 	return result, nil
 }
 
-func Inverse(ciphertext *ckks.Ciphertext, iterations int, initialApproximation int) ([]byte, error) {
+func Inverse(encryptedData []byte, iterations int, initialApproximation int) ([]byte, error) {
+	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
 	x0 := CkksEvaluator.MultByConstNew(ciphertext, 1.0/initialApproximation)
 	CkksEvaluator.Rescale(x0, CkksParams.DefaultScale(), x0)
 
