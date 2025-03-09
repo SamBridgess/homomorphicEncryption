@@ -132,18 +132,17 @@ func DivByConst(encryptedDataDividend []byte, encryptedDataDivisor float64) ([]b
 	return CkksEvaluator.MultByConstNew(ciphertext, 1.0/encryptedDataDivisor).MarshalBinary()
 }
 
-func PowConst(encryptedData []byte, pow int) ([]byte, error) {
+// Pow2 raises encryptedData to the power of 2 by multiplying it to itself, producing []byte of
+// encrypted data containing a power of 2 of encryptedData when decrypted
+func Pow2(encryptedData []byte) ([]byte, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+
 	err := ciphertext.UnmarshalBinary(encryptedData)
 	if err != nil {
 		return nil, err
 	}
 
-	for i := 0; i < pow-1; i++ {
-		CkksEvaluator.Mul(ciphertext, ciphertext, ciphertext)
-	}
-
-	return ciphertext.MarshalBinary()
+	return CkksEvaluator.MulNew(ciphertext, ciphertext).MarshalBinary()
 }
 
 /*
