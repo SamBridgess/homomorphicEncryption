@@ -1,4 +1,4 @@
-package math
+package ckksMath
 
 import (
 	"errors"
@@ -20,7 +20,7 @@ func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 		ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
 
 		err := ciphertext.UnmarshalBinary(encryptedData)
-		Evaluator.Add(sumCiphertext, ciphertext, sumCiphertext)
+		CkksEvaluator.Add(sumCiphertext, ciphertext, sumCiphertext)
 		if err != nil {
 			return nil, err
 		}
@@ -43,7 +43,7 @@ func ArrayMean(encryptedDataArray [][]byte) ([]byte, error) {
 		return nil, err
 	}
 
-	return Evaluator.MultByConstNew(ciphertext, 1.0/float64(len(encryptedDataArray))).MarshalBinary()
+	return CkksEvaluator.MultByConstNew(ciphertext, 1.0/float64(len(encryptedDataArray))).MarshalBinary()
 }
 
 // MovingAverage Returns an array, containing len(encryptedDataArray) - windowSize elements,
