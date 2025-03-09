@@ -109,11 +109,18 @@ func Inverse(encryptedData []byte, iterations int, initialApproximation float64)
 	}
 
 	x0 := CkksEvaluator.MultByConstNew(ciphertext, 1.0/initialApproximation)
-	CkksEvaluator.Rescale(x0, CkksParams.DefaultScale(), x0)
+	//CkksEvaluator.Rescale(x0, CkksParams.DefaultScale(), x0)
+	if x0.Level() > 0 {
+		err := CkksEvaluator.Rescale(ciphertext, CkksParams.DefaultScale(), x0)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	for i := 0; i < iterations; i++ {
 		// x_{n+1} = x_n * (2 - c * x_n)
 		cTimesXn := CkksEvaluator.MulRelinNew(ciphertext, x0)
+
 		err := CkksEvaluator.Rescale(cTimesXn, CkksParams.DefaultScale(), cTimesXn)
 		if err != nil {
 			return nil, err
@@ -121,7 +128,13 @@ func Inverse(encryptedData []byte, iterations int, initialApproximation float64)
 		twoMinusCTXn := CkksEvaluator.AddConstNew(cTimesXn, -2.0)
 		CkksEvaluator.Neg(twoMinusCTXn, twoMinusCTXn)
 		xnPlusOne := CkksEvaluator.MulRelinNew(x0, twoMinusCTXn)
-		err = CkksEvaluator.Rescale(xnPlusOne, CkksParams.DefaultScale(), xnPlusOne)
+
+		if xnPlusOne.Level() > 0 {
+			err := CkksEvaluator.Rescale(xnPlusOne, CkksParams.DefaultScale(), xnPlusOne)
+			if err != nil {
+				return nil, err
+			}
+		}
 		if err != nil {
 			return nil, err
 		}
