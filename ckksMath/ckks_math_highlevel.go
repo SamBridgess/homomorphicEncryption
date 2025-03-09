@@ -102,7 +102,7 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 	return result, nil
 }
 
-func Inverse(encryptedData []byte, iterations int, initialApproximation int) ([]byte, error) {
+func Inverse(encryptedData []byte, iterations int, initialApproximation float64) ([]byte, error) {
 	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
 	if err != nil {
 		return nil, err
