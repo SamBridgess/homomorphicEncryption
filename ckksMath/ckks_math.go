@@ -81,7 +81,7 @@ func SumOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 	return CkksEvaluator.AddNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
-// SumOf2 Subtracts encryptedData2 from encryptedData, producing []byte of encrypted data
+// Subtract Subtracts encryptedData2 from encryptedData, producing []byte of encrypted data
 // containing a difference of encryptedData data and encryptedData2 when decrypted
 func Subtract(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
@@ -130,6 +130,20 @@ func DivByConst(encryptedDataDividend []byte, encryptedDataDivisor float64) ([]b
 	}
 
 	return CkksEvaluator.MultByConstNew(ciphertext, 1.0/encryptedDataDivisor).MarshalBinary()
+}
+
+func PowConst(encryptedData []byte, pow int) ([]byte, error) {
+	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())
+	err := ciphertext.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < pow-1; i++ {
+		CkksEvaluator.Mul(ciphertext, ciphertext, ciphertext)
+	}
+
+	return ciphertext.MarshalBinary()
 }
 
 /*
