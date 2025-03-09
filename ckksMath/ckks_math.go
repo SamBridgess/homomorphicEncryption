@@ -135,7 +135,8 @@ func Pow2(encryptedData []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	return CkksEvaluator.PowerNew(ciphertext, 2).MarshalBinary()
+	//return CkksEvaluator.PowerNew(ciphertext, 2).MarshalBinary()
+	return CkksEvaluator.MulNew(ciphertext, ciphertext).MarshalBinary()
 }
 
 /*

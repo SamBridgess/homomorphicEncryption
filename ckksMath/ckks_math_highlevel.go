@@ -88,6 +88,13 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 			return nil, err
 		}
 
+		if ciphertextPow.Degree() > sumCiphertext.Degree() {
+			err := CkksEvaluator.Rescale(ciphertextPow, sumCiphertext.Scale, ciphertextPow)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		CkksEvaluator.Add(sumCiphertext, ciphertextPow, sumCiphertext)
 	}
 
