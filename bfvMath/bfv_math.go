@@ -2,10 +2,12 @@ package bfvMath
 
 import (
 	"github.com/ldsec/lattigo/v2/bfv"
+	"github.com/ldsec/lattigo/v2/rlwe"
 )
 
 var BfvParams bfv.Parameters
 var BfvEvaluator bfv.Evaluator
+var BfvEvalKey rlwe.EvaluationKey
 
 // MakeZeroCiphertext Takes any encrypted data and subtracts it from itself
 // making a *bfv.Ciphertext containing 0 when decrypted

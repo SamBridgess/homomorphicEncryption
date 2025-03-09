@@ -2,10 +2,12 @@ package ckksMath
 
 import (
 	"github.com/ldsec/lattigo/v2/ckks"
+	"github.com/ldsec/lattigo/v2/rlwe"
 )
 
 var CkksParams ckks.Parameters
 var CkksEvaluator ckks.Evaluator
+var CkksEvalkey rlwe.EvaluationKey
 
 func unmarshallIntoNewCiphertext(encryptedData []byte) (*ckks.Ciphertext, error) {
 	ciphertext := ckks.NewCiphertext(CkksParams, 1, CkksParams.MaxLevel(), CkksParams.DefaultScale())

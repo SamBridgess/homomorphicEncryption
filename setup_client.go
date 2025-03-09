@@ -10,11 +10,12 @@ import (
 
 // SetupClient Sets up CkksParams on client side and creates an Evaluator using
 // newly set up CkksParams. Evaluation key is skipped for now
-func SetupClient(ckksParams ckks.Parameters, bfvParams bfv.Parameters) {
-	var EvalKey rlwe.EvaluationKey
+func SetupClient(ckksParams ckks.Parameters, bfvParams bfv.Parameters, ckksEvalKey rlwe.EvaluationKey, bfvEvalKey rlwe.EvaluationKey) {
 	ckksMath.CkksParams = ckksParams
-	ckksMath.CkksEvaluator = ckks.NewEvaluator(ckksMath.CkksParams, EvalKey)
+	ckksMath.CkksEvalkey = ckksEvalKey
+	ckksMath.CkksEvaluator = ckks.NewEvaluator(ckksMath.CkksParams, ckksMath.CkksEvalkey)
 
 	bfvMath.BfvParams = bfvParams
-	bfvMath.BfvEvaluator = bfv.NewEvaluator(bfvMath.BfvParams, EvalKey)
+	bfvMath.BfvEvalKey = bfvEvalKey
+	bfvMath.BfvEvaluator = bfv.NewEvaluator(bfvMath.BfvParams, bfvMath.BfvEvalKey)
 }
