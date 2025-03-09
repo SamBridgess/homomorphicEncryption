@@ -12,7 +12,6 @@ import (
 // newly set up CkksParams. Evaluation key is skipped for now
 func SetupClient(ckksParams ckks.Parameters, bfvParams bfv.Parameters) {
 	var EvalKey rlwe.EvaluationKey
-
 	ckksMath.CkksParams = ckksParams
 	ckksMath.CkksEvaluator = ckks.NewEvaluator(ckksMath.CkksParams, EvalKey)
 

@@ -36,9 +36,11 @@ func StartSecureServer(port string, certFile string, keyFile string) {
 
 	r.POST("/decrypt_computations_ckks", handleDecryptCkks)
 	r.GET("/get_ckks_params", handleGetCkksParams)
+	r.GET("/get_ckks_eval_keys", handleGetEvalKeysCkks)
 
 	r.POST("/decrypt_computations_bfv", handleDecryptBfv)
 	r.GET("/get_bfv_params", handleGetBfvParams)
+	r.GET("/get_bfv_eval_keys", handleGetEvalKeysBfv)
 
 	server := &http.Server{
 		Addr:    ":" + port,
@@ -111,6 +113,66 @@ func GetBFVParamsFromServer(serverURL string) (bfv.Parameters, error) {
 	}
 
 	return bfvParams, nil
+}
+
+func GetCkksEvalKeysFromServer(serverURL string) (EvalKeys, error) {
+	client := HttpsServer
+
+	resp, err := client.Get(serverURL)
+	if err != nil {
+		return EvalKeys{}, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return EvalKeys{}, err
+	}
+
+	var response struct {
+		EvalKeys string `json:"ckks_eval_keys"`
+	}
+
+	if err := json.Unmarshal(body, &response); err != nil {
+		return EvalKeys{}, err
+	}
+
+	var ckksEvalKeys EvalKeys
+	if err := json.Unmarshal([]byte(response.EvalKeys), &ckksEvalKeys); err != nil {
+		return EvalKeys{}, err
+	}
+
+	return ckksEvalKeys, nil
+}
+
+func GetBfvEvalKeysFromServer(serverURL string) (EvalKeys, error) {
+	client := HttpsServer
+
+	resp, err := client.Get(serverURL)
+	if err != nil {
+		return EvalKeys{}, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return EvalKeys{}, err
+	}
+
+	var response struct {
+		EvalKeys string `json:"bfv_eval_keys"`
+	}
+
+	if err := json.Unmarshal(body, &response); err != nil {
+		return EvalKeys{}, err
+	}
+
+	var bfvEvalKeys EvalKeys
+	if err := json.Unmarshal([]byte(response.EvalKeys), &bfvEvalKeys); err != nil {
+		return EvalKeys{}, err
+	}
+
+	return bfvEvalKeys, nil
 }
 
 // SendComputationResultToServer_ckks Send CKKS computation results to server and get a decrypted result
@@ -219,4 +281,22 @@ func handleDecryptBfv(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
+}
+
+func handleGetEvalKeysCkks(c *gin.Context) {
+	paramsJSON, err := json.Marshal(EvalKeysCkks)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ckks eval keys serialization error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"ckks_eval_keys": string(paramsJSON)})
+}
+
+func handleGetEvalKeysBfv(c *gin.Context) {
+	paramsJSON, err := json.Marshal(EvalKeysBfv)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "bfv eval keys serialization error"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"bfv_eval_keys": string(paramsJSON)})
 }
