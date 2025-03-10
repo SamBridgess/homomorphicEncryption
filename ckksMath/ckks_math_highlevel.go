@@ -57,8 +57,8 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int) ([][]byte, error
 	return r, nil
 }
 
-// дисперсия
-func Variance(encryptedDataArray [][]byte) ([]byte, error) {
+// Variance Calculates variance of a passed array in []bytes
+func Variance(encryptedDataArray [][]byte) ([]byte, error) { //дисперсия
 	if len(encryptedDataArray) == 0 {
 		return nil, errors.New("cannot use empty array")
 	}
@@ -103,8 +103,10 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 	return result, nil
 }
 
-func ArithmeticProgressionElementN(firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
-	dec, err := SubtractConst(numberOfMembers, 1)
+// ArithmeticProgressionElementN Calculates the N element of arithmetic progression in []byte.
+// Requires the first element of progression and the difference between two members of progression
+func ArithmeticProgressionElementN(firstMember []byte, dif []byte, n []byte) ([]byte, error) {
+	dec, err := SubtractConst(n, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -117,6 +119,9 @@ func ArithmeticProgressionElementN(firstMember []byte, dif []byte, numberOfMembe
 	return Sum(firstMember, mult)
 }
 
+// ArithmeticProgressionSum Calculates sum of arithmetic progression in []byte.
+// Requires the first element of progression, the difference between two members of progression
+// and number of elements in progression
 func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
 	elementN, err := ArithmeticProgressionElementN(firstMember, dif, numberOfMembers)
 	if err != nil {
@@ -147,6 +152,7 @@ func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []
 	return DivByConst(mult, 2.0)
 }
 
+// Covariance Calculates covariance coefficient between two encrypted arrays in []byte
 func Covariance(encryptedDataArray1 [][]byte, encryptedDataArray2 [][]byte) ([]byte, error) {
 	if len(encryptedDataArray1) != len(encryptedDataArray2) {
 		return nil, errors.New("arrays must be of the same length")

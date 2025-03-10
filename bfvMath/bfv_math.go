@@ -9,6 +9,8 @@ var BfvParams bfv.Parameters
 var BfvEvaluator bfv.Evaluator
 var BfvEvalKey rlwe.EvaluationKey
 
+// unmarshallIntoNewCiphertext returns a new bfv.Ciphertext containing
+// unmarshalled number from encryptedData
 func unmarshallIntoNewCiphertext(encryptedData []byte) (*bfv.Ciphertext, error) {
 	ciphertext := bfv.NewCiphertext(BfvParams, 1)
 	err := ciphertext.UnmarshalBinary(encryptedData)

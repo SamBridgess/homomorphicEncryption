@@ -11,7 +11,7 @@ func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 		return nil, errors.New("cannot use empty array")
 	}
 
-	sumCiphertext, err := MakeZeroCiphertext(encryptedDataArray[0])
+	sumCiphertext, err := makeZeroCiphertext(encryptedDataArray[0])
 	if err != nil {
 		return nil, err
 	}
