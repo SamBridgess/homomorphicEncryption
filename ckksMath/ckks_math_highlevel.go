@@ -89,9 +89,6 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 		}
 
 		CkksEvaluator.Relinearize(ciphertextPow, ciphertextPow)
-		if err != nil {
-			return nil, err
-		}
 
 		CkksEvaluator.Add(sumCiphertext, ciphertextPow, sumCiphertext)
 	}
@@ -127,6 +124,17 @@ func ArithmeticProgressionSum(
 	}
 
 	sum, err := SumOf2(firstMember, elementN)
+	if err != nil {
+		return nil, err
+	}
+
+	sumCiphertext, err := unmarshallIntoNewCiphertext(sum)
+	if err != nil {
+		return nil, err
+	}
+	CkksEvaluator.Relinearize(sumCiphertext, sumCiphertext)
+
+	sum, err = sumCiphertext.MarshalBinary()
 	if err != nil {
 		return nil, err
 	}
