@@ -57,6 +57,7 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int) ([][]byte, error
 	return r, nil
 }
 
+// дисперсия
 func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 	if len(encryptedDataArray) == 0 {
 		return nil, errors.New("cannot use empty array")
@@ -67,7 +68,7 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 		return nil, err
 	}
 
-	sumCiphertext, err := MakeZeroCiphertext(encryptedDataArray[0])
+	ciphertextSum, err := MakeZeroCiphertext(encryptedDataArray[0])
 	if err != nil {
 		return nil, err
 	}
@@ -90,18 +91,19 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 
 		CkksEvaluator.Relinearize(ciphertextPow, ciphertextPow)
 
-		CkksEvaluator.Add(sumCiphertext, ciphertextPow, sumCiphertext)
+		CkksEvaluator.Add(ciphertextSum, ciphertextPow, ciphertextSum)
 	}
 
-	sumSquaredDiff, err := sumCiphertext.MarshalBinary()
+	sumSquaredDiff, err := ciphertextSum.MarshalBinary()
 	result, err := DivByConst(sumSquaredDiff, float64(len(encryptedDataArray)))
+	if err != nil {
+		return nil, err
+	}
 
 	return result, nil
 }
 
-func ArithmeticProgressionElementN(
-	firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
-
+func ArithmeticProgressionElementN(firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
 	dec, err := SubtractConst(numberOfMembers, 1)
 	if err != nil {
 		return nil, err
@@ -115,9 +117,7 @@ func ArithmeticProgressionElementN(
 	return SumOf2(firstMember, mult)
 }
 
-func ArithmeticProgressionSum(
-	firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
-
+func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
 	elementN, err := ArithmeticProgressionElementN(firstMember, dif, numberOfMembers)
 	if err != nil {
 		return nil, err
@@ -145,6 +145,64 @@ func ArithmeticProgressionSum(
 	}
 
 	return DivByConst(mult, 2.0)
+}
+
+func Covariance(encryptedDataArray1 [][]byte, encryptedDataArray2 [][]byte) ([]byte, error) {
+	if len(encryptedDataArray1) != len(encryptedDataArray2) {
+		return nil, errors.New("arrays must be of the same length")
+	}
+	if len(encryptedDataArray1) == 0 || len(encryptedDataArray2) == 0 {
+		return nil, errors.New("cannot use empty array")
+	}
+
+	mean1, err := ArrayMean(encryptedDataArray1)
+	if err != nil {
+		return nil, err
+	}
+
+	mean2, err := ArrayMean(encryptedDataArray2)
+	if err != nil {
+		return nil, err
+	}
+
+	ciphertextSum, err := MakeZeroCiphertext(encryptedDataArray1[0])
+	if err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < len(encryptedDataArray1); i++ {
+		sub1, err := Subtract(encryptedDataArray1[i], mean1)
+		if err != nil {
+			return nil, err
+		}
+
+		sub2, err := Subtract(encryptedDataArray2[i], mean2)
+		if err != nil {
+			return nil, err
+		}
+
+		mult, err := MultOf2(sub1, sub2)
+		if err != nil {
+			return nil, err
+		}
+
+		ciphertextMult, err := unmarshallIntoNewCiphertext(mult)
+		if err != nil {
+			return nil, err
+		}
+
+		CkksEvaluator.Relinearize(ciphertextMult, ciphertextMult)
+
+		CkksEvaluator.Add(ciphertextSum, ciphertextMult, ciphertextSum)
+	}
+
+	sum, err := ciphertextSum.MarshalBinary()
+	result, err := DivByConst(sum, float64(len(encryptedDataArray1)))
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 /*
