@@ -118,6 +118,27 @@ func ArithmeticProgressionElementN(
 	return SumOf2(firstMember, mult)
 }
 
+func ArithmeticProgressionSum(
+	firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
+
+	elementN, err := ArithmeticProgressionElementN(firstMember, dif, numberOfMembers)
+	if err != nil {
+		return nil, err
+	}
+
+	sum, err := SumOf2(firstMember, elementN)
+	if err != nil {
+		return nil, err
+	}
+
+	mult, err := MultOf2(numberOfMembers, sum)
+	if err != nil {
+		return nil, err
+	}
+
+	return DivByConst(mult, 2.0)
+}
+
 /*
 func Inverse(encryptedData []byte, iterations int, initialApproximation float64) ([]byte, error) {
 	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
