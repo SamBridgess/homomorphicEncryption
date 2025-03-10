@@ -109,7 +109,6 @@ func Inverse(encryptedData []byte, iterations int, initialApproximation float64)
 	}
 
 	x0 := CkksEvaluator.MultByConstNew(ciphertext, 1.0/initialApproximation)
-	//CkksEvaluator.Rescale(x0, CkksParams.DefaultScale(), x0)
 	if x0.Level() > 0 {
 		err := CkksEvaluator.Rescale(ciphertext, CkksParams.DefaultScale(), x0)
 		if err != nil {
