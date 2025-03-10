@@ -121,10 +121,13 @@ func Inverse(encryptedData []byte, iterations int, initialApproximation float64)
 		// x_{n+1} = x_n * (2 - c * x_n)
 		cTimesXn := CkksEvaluator.MulRelinNew(ciphertext, x0)
 
-		err := CkksEvaluator.Rescale(cTimesXn, CkksParams.DefaultScale(), cTimesXn)
-		if err != nil {
-			return nil, err
+		if cTimesXn.Level() > 0 {
+			err := CkksEvaluator.Rescale(cTimesXn, CkksParams.DefaultScale(), cTimesXn)
+			if err != nil {
+				return nil, err
+			}
 		}
+
 		twoMinusCTXn := CkksEvaluator.AddConstNew(cTimesXn, -2.0)
 		CkksEvaluator.Neg(twoMinusCTXn, twoMinusCTXn)
 		xnPlusOne := CkksEvaluator.MulRelinNew(x0, twoMinusCTXn)
