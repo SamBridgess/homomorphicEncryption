@@ -102,6 +102,23 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 	return result, nil
 }
 
+func ArithmeticProgressionElementN(
+	firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
+
+	dec, err := SubtractConst(numberOfMembers, 1)
+	if err != nil {
+		return nil, err
+	}
+
+	mult, err := MultOf2(dif, dec)
+	if err != nil {
+		return nil, err
+	}
+
+	return SumOf2(firstMember, mult)
+}
+
+/*
 func Inverse(encryptedData []byte, iterations int, initialApproximation float64) ([]byte, error) {
 	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
 	if err != nil {
@@ -145,7 +162,7 @@ func Inverse(encryptedData []byte, iterations int, initialApproximation float64)
 
 	return x0.MarshalBinary()
 }
-
+*/
 /*
 func SqrtOnEncryptedData(ciphertextA *ckks.Ciphertext, iterations int, initialGuess float64, evaluator *ckks.Evaluator, encoder ckks.Encoder, params ckks.Parameters) *ckks.Ciphertext {
 	// Начальное приближение для корня
