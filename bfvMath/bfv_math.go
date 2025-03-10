@@ -9,9 +9,29 @@ var BfvParams bfv.Parameters
 var BfvEvaluator bfv.Evaluator
 var BfvEvalKey rlwe.EvaluationKey
 
-// MakeZeroCiphertext Takes any encrypted data and subtracts it from itself
+func unmarshallIntoNewCiphertext(encryptedData []byte) (*bfv.Ciphertext, error) {
+	ciphertext := bfv.NewCiphertext(BfvParams, 1)
+	err := ciphertext.UnmarshalBinary(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+	return ciphertext, nil
+}
+
+// MultByPositiveConst Multiplies encryptedData by uint64 multValue, producing []byte of encrypted data
+// containing a product of encryptedData and multValue when decrypted
+func MultByPositiveConst(encryptedData []byte, multValue uint64) ([]byte, error) {
+	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	return BfvEvaluator.MulScalarNew(ciphertext, multValue).MarshalBinary()
+}
+
+// makeZeroCiphertext Takes any encrypted data and subtracts it from itself
 // making a *bfv.Ciphertext containing 0 when decrypted
-func MakeZeroCiphertext(someEncryptedData []byte) (*bfv.Ciphertext, error) {
+func makeZeroCiphertext(someEncryptedData []byte) (*bfv.Ciphertext, error) {
 	ciphertext := bfv.NewCiphertext(BfvParams, 1)
 	err := ciphertext.UnmarshalBinary(someEncryptedData)
 	if err != nil {
@@ -20,18 +40,15 @@ func MakeZeroCiphertext(someEncryptedData []byte) (*bfv.Ciphertext, error) {
 	return BfvEvaluator.SubNew(ciphertext, ciphertext), nil
 }
 
-// SumOf2 Adds encryptedData to encryptedData2, producing []byte of encrypted data
+// Sum Adds encryptedData to encryptedData2, producing []byte of encrypted data
 // containing a sum of encryptedData data and encryptedData2 when decrypted
-func SumOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
-	ciphertext := bfv.NewCiphertext(BfvParams, 1)
-	ciphertext2 := bfv.NewCiphertext(BfvParams, 1)
-
-	err := ciphertext.UnmarshalBinary(encryptedData)
+func Sum(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
+	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ciphertext2.UnmarshalBinary(encryptedData2)
+	ciphertext2, err := unmarshallIntoNewCiphertext(encryptedData2)
 	if err != nil {
 		return nil, err
 	}
@@ -58,9 +75,9 @@ func Subtract(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 	return BfvEvaluator.SubNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
-// MultOf2 Multiplies encryptedData by encryptedData2, producing []byte of encrypted data
+// Mult Multiplies encryptedData by encryptedData2, producing []byte of encrypted data
 // containing a product of encryptedData and encryptedData2 when decrypted
-func MultOf2(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
+func Mult(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 	ciphertext := bfv.NewCiphertext(BfvParams, 1)
 	ciphertext2 := bfv.NewCiphertext(BfvParams, 1)
 

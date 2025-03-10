@@ -10,7 +10,7 @@ func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 		return nil, errors.New("cannot use empty array")
 	}
 
-	sumCiphertext, err := MakeZeroCiphertext(encryptedDataArray[0])
+	sumCiphertext, err := makeZeroCiphertext(encryptedDataArray[0])
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) {
 		return nil, err
 	}
 
-	ciphertextSum, err := MakeZeroCiphertext(encryptedDataArray[0])
+	ciphertextSum, err := makeZeroCiphertext(encryptedDataArray[0])
 	if err != nil {
 		return nil, err
 	}
@@ -109,12 +109,12 @@ func ArithmeticProgressionElementN(firstMember []byte, dif []byte, numberOfMembe
 		return nil, err
 	}
 
-	mult, err := MultOf2(dif, dec)
+	mult, err := Mult(dif, dec)
 	if err != nil {
 		return nil, err
 	}
 
-	return SumOf2(firstMember, mult)
+	return Sum(firstMember, mult)
 }
 
 func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
@@ -123,7 +123,7 @@ func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []
 		return nil, err
 	}
 
-	sum, err := SumOf2(firstMember, elementN)
+	sum, err := Sum(firstMember, elementN)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []
 		return nil, err
 	}
 
-	mult, err := MultOf2(numberOfMembers, sum)
+	mult, err := Mult(numberOfMembers, sum)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func Covariance(encryptedDataArray1 [][]byte, encryptedDataArray2 [][]byte) ([]b
 		return nil, err
 	}
 
-	ciphertextSum, err := MakeZeroCiphertext(encryptedDataArray1[0])
+	ciphertextSum, err := makeZeroCiphertext(encryptedDataArray1[0])
 	if err != nil {
 		return nil, err
 	}
@@ -181,7 +181,7 @@ func Covariance(encryptedDataArray1 [][]byte, encryptedDataArray2 [][]byte) ([]b
 			return nil, err
 		}
 
-		mult, err := MultOf2(sub1, sub2)
+		mult, err := Mult(sub1, sub2)
 		if err != nil {
 			return nil, err
 		}
@@ -204,107 +204,3 @@ func Covariance(encryptedDataArray1 [][]byte, encryptedDataArray2 [][]byte) ([]b
 
 	return result, nil
 }
-
-/*
-func Inverse(encryptedData []byte, iterations int, initialApproximation float64) ([]byte, error) {
-	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	x0 := CkksEvaluator.MultByConstNew(ciphertext, 1.0/initialApproximation)
-	if x0.Level() > 0 {
-		err := CkksEvaluator.Rescale(ciphertext, CkksParams.DefaultScale(), x0)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	for i := 0; i < iterations; i++ {
-		// x_{n+1} = x_n * (2 - c * x_n)
-		cTimesXn := CkksEvaluator.MulRelinNew(ciphertext, x0)
-
-		if cTimesXn.Level() > 0 {
-			err := CkksEvaluator.Rescale(cTimesXn, CkksParams.DefaultScale(), cTimesXn)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		twoMinusCTXn := CkksEvaluator.AddConstNew(cTimesXn, -2.0)
-		CkksEvaluator.Neg(twoMinusCTXn, twoMinusCTXn)
-		xnPlusOne := CkksEvaluator.MulRelinNew(x0, twoMinusCTXn)
-
-		if xnPlusOne.Level() > 0 {
-			err := CkksEvaluator.Rescale(xnPlusOne, CkksParams.DefaultScale(), xnPlusOne)
-			if err != nil {
-				return nil, err
-			}
-		}
-		if err != nil {
-			return nil, err
-		}
-		x0 = xnPlusOne
-	}
-
-	return x0.MarshalBinary()
-}
-*/
-/*
-func SqrtOnEncryptedData(ciphertextA *ckks.Ciphertext, iterations int, initialGuess float64, evaluator *ckks.Evaluator, encoder ckks.Encoder, params ckks.Parameters) *ckks.Ciphertext {
-	// Начальное приближение для корня
-	initialGuessCiphertext := MakeCiphertextFromFloat(initialGuess, evaluator, encoder, params)
-
-	// Итеративное уточнение приближения
-	for i := 0; i < iterations; i++ {
-		// Вычисление a / x_n
-		ciphertextRatio := evaluator.DivNew(ciphertextA, initialGuessCiphertext)
-
-		// Вычисление x_n + (a / x_n)
-		ciphertextSum := evaluator.AddNew(initialGuessCiphertext, ciphertextRatio)
-
-		// Вычисление (x_n + (a / x_n)) / 2
-		ciphertextSqrt := evaluator.MultByConstNew(ciphertextSum, 0.5)
-
-		// Обновление приближения
-		initialGuessCiphertext = ciphertextSqrt
-	}
-
-	return initialGuessCiphertext
-}
-
-func Divide(encryptedData []byte, encryptedData2 []byte, iterations int, initApr float64, ckksParams ckks.Parameters) ([]byte, error) {
-	evaluator := getNewEvaluator(ckksParams)
-
-	ciphertextA := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-	ciphertextB := ckks.NewCiphertext(ckksParams, 1, ckksParams.MaxLevel(), ckksParams.DefaultScale())
-
-	err := ciphertextA.UnmarshalBinary(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	err = ciphertextB.UnmarshalBinary(encryptedData2)
-	if err != nil {
-		return nil, err
-	}
-
-	ciphertextInvB := MakeCiphertextFromFloat(initApr, encryptedData, evaluator, ckksParams)
-
-	for i := 0; i < iterations; i++ {
-		// tmp = b * x_n  (где x_n - current apr)
-		tmp := evaluator.MulNew(ciphertextB, ciphertextInvB)
-
-		//get 2 in cipher text
-		twoCiphertext := MakeCiphertextFromFloat(2.0, encryptedData, evaluator, ckksParams)
-
-		// tmp = 2 - tmp  (2 - b * x_n)
-		tmp = evaluator.SubNew(twoCiphertext, tmp)
-
-		// x_n+1 = x_n * tmp  (x_n * (2 - b * x_n))
-		ciphertextInvB = evaluator.MulNew(ciphertextInvB, tmp)
-	}
-	ciphertextResult := evaluator.MulNew(ciphertextA, ciphertextInvB)
-	return ciphertextResult.MarshalBinary()
-}
-*/

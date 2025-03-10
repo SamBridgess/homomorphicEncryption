@@ -40,9 +40,6 @@ var EvalKeysBfv EvalKeys
 
 type EvalKeys struct {
 	EvalKey1 rlwe.EvaluationKey
-	EvalKey2 rlwe.EvaluationKey
-	EvalKey3 rlwe.EvaluationKey
-	EvalKey4 rlwe.EvaluationKey
 }
 
 func SetEvalKeysByMethod(method Method) {
@@ -50,17 +47,11 @@ func SetEvalKeysByMethod(method Method) {
 	case CKKS:
 		EvalKeysCkks = EvalKeys{
 			EvalKey1: GenEvalKeyCkks(1),
-			EvalKey2: GenEvalKeyCkks(2),
-			EvalKey3: GenEvalKeyCkks(3),
-			EvalKey4: GenEvalKeyCkks(4),
 		}
 		fmt.Println("EvalKeys keys generated")
 	case BFV:
 		EvalKeysBfv = EvalKeys{
 			EvalKey1: GenEvalKeyBfv(1),
-			EvalKey2: GenEvalKeyBfv(2),
-			EvalKey3: GenEvalKeyBfv(3),
-			EvalKey4: GenEvalKeyBfv(4),
 		}
 		fmt.Println("EvalKeys keys generated")
 	default:
