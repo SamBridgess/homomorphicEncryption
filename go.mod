@@ -5,6 +5,7 @@ go 1.23.5
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/ldsec/lattigo/v2 v2.4.1
+	github.com/lib/pq v1.10.9
 )
 
 require (
