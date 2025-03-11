@@ -6,7 +6,7 @@ import (
 
 type ArrayOperation func([][]byte) ([]byte, error)
 type ArrayOperation2 func([][]byte, [][]byte) ([]byte, error)
-type Operation3 func([]byte, []byte) ([]byte, error)
+type Operation3 func([]byte, []byte, []byte) ([]byte, error)
 
 // ArraySum Returns the encrypted sum of all elements of passed array in []byte
 func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
