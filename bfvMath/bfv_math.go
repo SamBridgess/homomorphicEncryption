@@ -5,6 +5,9 @@ import (
 	"github.com/ldsec/lattigo/v2/rlwe"
 )
 
+type ConstOperation func([]byte, uint64) ([]byte, error)
+type Operation2 func([]byte, []byte) ([]byte, error)
+
 var BfvParams bfv.Parameters
 var BfvEvaluator bfv.Evaluator
 var BfvEvalKey rlwe.EvaluationKey
@@ -20,17 +23,6 @@ func unmarshallIntoNewCiphertext(encryptedData []byte) (*bfv.Ciphertext, error) 
 	return ciphertext, nil
 }
 
-// MultByPositiveConst Multiplies encryptedData by uint64 multValue, producing []byte of encrypted data
-// containing a product of encryptedData and multValue when decrypted
-func MultByPositiveConst(encryptedData []byte, multValue uint64) ([]byte, error) {
-	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
-	if err != nil {
-		return nil, err
-	}
-
-	return BfvEvaluator.MulScalarNew(ciphertext, multValue).MarshalBinary()
-}
-
 // makeZeroCiphertext Takes any encrypted data and subtracts it from itself
 // making a *bfv.Ciphertext containing 0 when decrypted
 func makeZeroCiphertext(someEncryptedData []byte) (*bfv.Ciphertext, error) {
@@ -40,6 +32,17 @@ func makeZeroCiphertext(someEncryptedData []byte) (*bfv.Ciphertext, error) {
 		return nil, err
 	}
 	return BfvEvaluator.SubNew(ciphertext, ciphertext), nil
+}
+
+// MultByPositiveConst Multiplies encryptedData by uint64 multValue, producing []byte of encrypted data
+// containing a product of encryptedData and multValue when decrypted
+func MultByPositiveConst(encryptedData []byte, multValue uint64) ([]byte, error) {
+	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
+	if err != nil {
+		return nil, err
+	}
+
+	return BfvEvaluator.MulScalarNew(ciphertext, multValue).MarshalBinary()
 }
 
 // Sum Adds encryptedData to encryptedData2, producing []byte of encrypted data

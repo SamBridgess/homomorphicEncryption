@@ -2,7 +2,6 @@ package homomorphic_encryption_lib
 
 import (
 	"github.com/ldsec/lattigo/v2/bfv"
-	"log"
 )
 
 // EncryptBFV Encrypts float64 data into []byte using BVF algorithm
@@ -14,7 +13,7 @@ func EncryptBFV(data int64) ([]byte, error) {
 	encoder.EncodeInt([]int64{data}, plaintext)
 
 	ciphertext := encryptor.EncryptNew(plaintext)
-	log.Println("Data successfully encrypted (BFV)")
+
 	return ciphertext.MarshalBinary()
 }
 
@@ -31,6 +30,5 @@ func DecryptBFV(data []byte) (int64, error) {
 	encoder := bfv.NewEncoder(BfvParams)
 	decoded := encoder.DecodeIntNew(plaintext)
 
-	log.Println("Data successfully decrypted (BFV)")
 	return decoded[0], nil
 }

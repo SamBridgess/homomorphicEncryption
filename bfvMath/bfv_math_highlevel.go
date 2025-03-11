@@ -5,6 +5,8 @@ import (
 	"github.com/ldsec/lattigo/v2/bfv"
 )
 
+type ArrayOperation func([][]byte) ([]byte, error)
+
 // ArraySum Returns the encrypted sum of all elements of passed array in []byte
 func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 	if len(encryptedDataArray) == 0 {

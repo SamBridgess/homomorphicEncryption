@@ -4,6 +4,10 @@ import (
 	"errors"
 )
 
+type ArrayOperation func([][]byte) ([]byte, error)
+type ArrayOperation2 func([][]byte, [][]byte) ([]byte, error)
+type Operation3 func([]byte, []byte) ([]byte, error)
+
 // ArraySum Returns the encrypted sum of all elements of passed array in []byte
 func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 	if len(encryptedDataArray) == 0 {
@@ -103,55 +107,6 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) { //дисперси�
 	return result, nil
 }
 
-// ArithmeticProgressionElementN Calculates the N element of arithmetic progression in []byte.
-// Requires the first element of progression and the difference between two members of progression
-func ArithmeticProgressionElementN(firstMember []byte, dif []byte, n []byte) ([]byte, error) {
-	dec, err := SubtractConst(n, 1)
-	if err != nil {
-		return nil, err
-	}
-
-	mult, err := Mult(dif, dec)
-	if err != nil {
-		return nil, err
-	}
-
-	return Sum(firstMember, mult)
-}
-
-// ArithmeticProgressionSum Calculates sum of arithmetic progression in []byte.
-// Requires the first element of progression, the difference between two members of progression
-// and number of elements in progression
-func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
-	elementN, err := ArithmeticProgressionElementN(firstMember, dif, numberOfMembers)
-	if err != nil {
-		return nil, err
-	}
-
-	sum, err := Sum(firstMember, elementN)
-	if err != nil {
-		return nil, err
-	}
-
-	sumCiphertext, err := unmarshallIntoNewCiphertext(sum)
-	if err != nil {
-		return nil, err
-	}
-	CkksEvaluator.Relinearize(sumCiphertext, sumCiphertext)
-
-	sum, err = sumCiphertext.MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
-	mult, err := Mult(numberOfMembers, sum)
-	if err != nil {
-		return nil, err
-	}
-
-	return DivByConst(mult, 2.0)
-}
-
 // Covariance Calculates covariance coefficient between two encrypted arrays in []byte
 func Covariance(encryptedDataArray1 [][]byte, encryptedDataArray2 [][]byte) ([]byte, error) {
 	if len(encryptedDataArray1) != len(encryptedDataArray2) {
@@ -209,4 +164,53 @@ func Covariance(encryptedDataArray1 [][]byte, encryptedDataArray2 [][]byte) ([]b
 	}
 
 	return result, nil
+}
+
+// ArithmeticProgressionElementN Calculates the N element of arithmetic progression in []byte.
+// Requires the first element of progression and the difference between two members of progression
+func ArithmeticProgressionElementN(firstMember []byte, dif []byte, n []byte) ([]byte, error) {
+	dec, err := SubtractConst(n, 1)
+	if err != nil {
+		return nil, err
+	}
+
+	mult, err := Mult(dif, dec)
+	if err != nil {
+		return nil, err
+	}
+
+	return Sum(firstMember, mult)
+}
+
+// ArithmeticProgressionSum Calculates sum of arithmetic progression in []byte.
+// Requires the first element of progression, the difference between two members of progression
+// and number of elements in progression
+func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []byte) ([]byte, error) {
+	elementN, err := ArithmeticProgressionElementN(firstMember, dif, numberOfMembers)
+	if err != nil {
+		return nil, err
+	}
+
+	sum, err := Sum(firstMember, elementN)
+	if err != nil {
+		return nil, err
+	}
+
+	sumCiphertext, err := unmarshallIntoNewCiphertext(sum)
+	if err != nil {
+		return nil, err
+	}
+	CkksEvaluator.Relinearize(sumCiphertext, sumCiphertext)
+
+	sum, err = sumCiphertext.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+
+	mult, err := Mult(numberOfMembers, sum)
+	if err != nil {
+		return nil, err
+	}
+
+	return DivByConst(mult, 2.0)
 }

@@ -5,6 +5,10 @@ import (
 	"github.com/ldsec/lattigo/v2/rlwe"
 )
 
+type ConstOperation func([]byte, float64) ([]byte, error)
+type Operation1 func([]byte) ([]byte, error)
+type Operation2 func([]byte, []byte) ([]byte, error)
+
 var CkksParams ckks.Parameters
 var CkksEvaluator ckks.Evaluator
 var CkksEvalkey rlwe.EvaluationKey

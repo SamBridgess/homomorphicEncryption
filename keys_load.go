@@ -2,7 +2,6 @@ package homomorphic_encryption_lib
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ldsec/lattigo/v2/bfv"
 	"github.com/ldsec/lattigo/v2/ckks"
 	"github.com/ldsec/lattigo/v2/rlwe"
@@ -145,13 +144,13 @@ func LoadAndSetKeys(keysFileLocation string, method Method) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("Keys loaded from file (CKKS)")
+		log.Println("Keys loaded from file (CKKS)")
 	case BFV:
 		err = json.Unmarshal(data, &BfvKeys)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("Keys loaded from file (BFV)")
+		log.Println("Keys loaded from file (BFV)")
 	default:
 		log.Panic("unknown method")
 	}
