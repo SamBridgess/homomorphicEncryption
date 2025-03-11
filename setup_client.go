@@ -6,6 +6,7 @@ import (
 	"github.com/ldsec/lattigo/v2/bfv"
 	"github.com/ldsec/lattigo/v2/ckks"
 	"github.com/ldsec/lattigo/v2/rlwe"
+	"log"
 )
 
 // SetupClient Sets up CkksParams on client side and creates an Evaluator using
@@ -18,4 +19,5 @@ func SetupClient(ckksParams ckks.Parameters, bfvParams bfv.Parameters, ckksEvalK
 	bfvMath.BfvParams = bfvParams
 	bfvMath.BfvEvalKey = bfvEvalKey
 	bfvMath.BfvEvaluator = bfv.NewEvaluator(bfvMath.BfvParams, bfvMath.BfvEvalKey)
+	log.Println("Client setup successful")
 }

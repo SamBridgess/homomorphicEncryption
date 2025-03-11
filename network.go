@@ -115,6 +115,7 @@ func GetBFVParamsFromServer(serverURL string) (bfv.Parameters, error) {
 	return bfvParams, nil
 }
 
+// GetCKKSParamsFromServer Retrieve CKKS EvalKeys from server
 func GetCkksEvalKeysFromServer(serverURL string) (EvalKeys, error) {
 	client := HttpsServer
 
@@ -145,6 +146,7 @@ func GetCkksEvalKeysFromServer(serverURL string) (EvalKeys, error) {
 	return ckksEvalKeys, nil
 }
 
+// GetCKKSParamsFromServer Retrieve BFV EvalKeys from server
 func GetBfvEvalKeysFromServer(serverURL string) (EvalKeys, error) {
 	client := HttpsServer
 
@@ -245,7 +247,7 @@ func handleGetBfvParams(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"bfv_params": string(paramsJSON)})
 }
 
-// handleDecrypt A request handler for decrypting a result of client calculations with CKKS
+// handleDecryptCkks A request handler for decrypting a result of client calculations with CKKS
 func handleDecryptCkks(c *gin.Context) {
 	var req struct {
 		EncryptedResult []byte `json:"encrypted_result"`
@@ -283,6 +285,7 @@ func handleDecryptBfv(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"decrypted_result": decResult})
 }
 
+// handleGetBfvParams A request handler for CKKS EvalKeys retrieving
 func handleGetEvalKeysCkks(c *gin.Context) {
 	paramsJSON, err := json.Marshal(EvalKeysCkks)
 	if err != nil {
@@ -292,6 +295,7 @@ func handleGetEvalKeysCkks(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"ckks_eval_keys": string(paramsJSON)})
 }
 
+// handleGetBfvParams A request handler for BFV EvalKeys retrieving
 func handleGetEvalKeysBfv(c *gin.Context) {
 	paramsJSON, err := json.Marshal(EvalKeysBfv)
 	if err != nil {

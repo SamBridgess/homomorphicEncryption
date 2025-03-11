@@ -6,6 +6,7 @@ import (
 	"github.com/ldsec/lattigo/v2/bfv"
 	"github.com/ldsec/lattigo/v2/ckks"
 	"github.com/ldsec/lattigo/v2/rlwe"
+	"log"
 	"os"
 )
 
@@ -48,14 +49,14 @@ func SetEvalKeysByMethod(method Method) {
 		EvalKeysCkks = EvalKeys{
 			EvalKey1: GenEvalKeyCkks(1),
 		}
-		fmt.Println("EvalKeys keys generated")
+		log.Println("EvalKeys keys generated (CKKS)")
 	case BFV:
 		EvalKeysBfv = EvalKeys{
 			EvalKey1: GenEvalKeyBfv(1),
 		}
-		fmt.Println("EvalKeys keys generated")
+		log.Println("EvalKeys keys generated (BFV)")
 	default:
-		panic("unknown method")
+		log.Panic("unknown method")
 	}
 }
 
@@ -88,16 +89,16 @@ func NewKeyPair(Sk *rlwe.SecretKey, Pk *rlwe.PublicKey) KeyPair {
 // If it doesn't - generates a new keys file for specified method
 func LoadOrGenerateKeys(keysFileLocation string, method Method) {
 	if _, err := os.Stat(keysFileLocation); os.IsNotExist(err) {
-		fmt.Printf("Keys file '%s' not found. Generating new keys\n", keysFileLocation)
+		log.Printf("Keys file '%s' not found. Generating new keys\n", keysFileLocation)
 		GenerateAndSetAndSaveKeys(keysFileLocation, method)
 	} else {
-		fmt.Println("Loading keys from file...")
+		log.Println("Loading keys from file...")
 		LoadAndSetKeys(keysFileLocation, method)
 	}
 	SetEvalKeysByMethod(method)
 }
 
-// GenerateAndSaveKeysCKKS Generates new KeyPair and saves it to keysFileLocation
+// GenerateAndSetAndSaveKeys Generates new KeyPair and saves it to keysFileLocation
 // json file
 func GenerateAndSetAndSaveKeys(keysFileLocation string, method Method) {
 	var data []byte
@@ -110,25 +111,28 @@ func GenerateAndSetAndSaveKeys(keysFileLocation string, method Method) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("CKKS keys generated and saved")
+		err = os.WriteFile(keysFileLocation, data, 0644)
+		if err != nil {
+			panic(err)
+		}
+		log.Println("Keys generated and saved (CKKS)")
 	case BFV:
 		BfvKeys = GenKeysBFV()
 		data, err = json.Marshal(BfvKeys)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("BFV keys generated and saved")
+		err = os.WriteFile(keysFileLocation, data, 0644)
+		if err != nil {
+			panic(err)
+		}
+		log.Println("Keys generated and saved (BFV)")
 	default:
-		panic("unknown method")
-	}
-
-	err = os.WriteFile(keysFileLocation, data, 0644)
-	if err != nil {
-		panic(err)
+		log.Panic("unknown method")
 	}
 }
 
-// LoadKeys Loads KeyPair from keysFileLocation json file
+// LoadAndSetKeys Loads KeyPair from keysFileLocation json file
 func LoadAndSetKeys(keysFileLocation string, method Method) {
 	data, err := os.ReadFile(keysFileLocation)
 	if err != nil {
@@ -141,14 +145,14 @@ func LoadAndSetKeys(keysFileLocation string, method Method) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("CKKS keys loaded from file.")
+		fmt.Println("Keys loaded from file (CKKS)")
 	case BFV:
 		err = json.Unmarshal(data, &BfvKeys)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("BFV keys loaded from file.")
+		fmt.Println("Keys loaded from file (BFV)")
 	default:
-		panic("unknown method")
+		log.Panic("unknown method")
 	}
 }

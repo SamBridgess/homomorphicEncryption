@@ -3,6 +3,7 @@ package homomorphic_encryption_lib
 import (
 	"github.com/ldsec/lattigo/v2/bfv"
 	"github.com/ldsec/lattigo/v2/ckks"
+	"log"
 )
 
 var CkksParams ckks.Parameters
@@ -20,4 +21,5 @@ func SetupServer(ckksKeysFileLocation string, bfvKeysFileLocation string) {
 	}
 	LoadOrGenerateKeys(ckksKeysFileLocation, CKKS)
 	LoadOrGenerateKeys(bfvKeysFileLocation, BFV)
+	log.Println("Server setup successful")
 }
