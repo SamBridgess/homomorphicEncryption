@@ -50,7 +50,7 @@ func ArrayMean(encryptedDataArray [][]byte) ([]byte, error) {
 // MovingAverage Returns an array, containing len(encryptedDataArray) - windowSize elements,
 // each representing a calculated mean of numbers within a shifting window of size windowSize
 func MovingAverage(encryptedDataArray [][]byte, windowSize int) ([][]byte, error) {
-	movingArrayLen := len(encryptedDataArray) - windowSize
+	movingArrayLen := len(encryptedDataArray) - windowSize + 1
 	r := make([][]byte, movingArrayLen)
 	for i := 0; i < movingArrayLen; i++ {
 		var err error
