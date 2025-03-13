@@ -1,4 +1,4 @@
-package homomorphic_encryption_lib
+package homomorphicEncryption
 
 import (
 	"database/sql"

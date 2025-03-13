@@ -1,8 +1,8 @@
-package homomorphic_encryption_lib
+package homomorphicEncryption
 
 import (
-	"github.com/SamBridgess/homomorphic_encryption_lib/bfvMath"
-	"github.com/SamBridgess/homomorphic_encryption_lib/ckksMath"
+	"github.com/SamBridgess/homomorphicEncryption/bfvMath"
+	"github.com/SamBridgess/homomorphicEncryption/ckksMath"
 	"github.com/ldsec/lattigo/v2/bfv"
 	"github.com/ldsec/lattigo/v2/ckks"
 	"github.com/ldsec/lattigo/v2/rlwe"

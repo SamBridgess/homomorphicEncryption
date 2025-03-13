@@ -1,7 +1,7 @@
 package main
 
 import (
-	he "github.com/SamBridgess/homomorphic_encryption_lib"
+	he "github.com/SamBridgess/homomorphicEncryption"
 	_ "github.com/lib/pq"
 	"log"
 )

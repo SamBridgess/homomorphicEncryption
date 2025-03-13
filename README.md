@@ -2,4 +2,4 @@
 
 README to be updated, check [Server setup guide](examples%2Fserver%2FREADME.md)
 and [Client setup guide](examples%2Fclient%2FREADME.md) for now
-![scheme.png](scheme.png)
+![scheme.png](resources/scheme.png)

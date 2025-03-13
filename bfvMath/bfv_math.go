@@ -64,15 +64,12 @@ func Sum(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 // Subtract Subtracts encryptedData2 from encryptedData, producing []byte of encrypted data
 // containing a difference of encryptedData data and encryptedData2 when decrypted
 func Subtract(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
-	ciphertext := bfv.NewCiphertext(BfvParams, 1)
-	ciphertext2 := bfv.NewCiphertext(BfvParams, 1)
-
-	err := ciphertext.UnmarshalBinary(encryptedData)
+	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ciphertext2.UnmarshalBinary(encryptedData2)
+	ciphertext2, err := unmarshallIntoNewCiphertext(encryptedData2)
 	if err != nil {
 		return nil, err
 	}
@@ -83,15 +80,12 @@ func Subtract(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 // Mult Multiplies encryptedData by encryptedData2, producing []byte of encrypted data
 // containing a product of encryptedData and encryptedData2 when decrypted
 func Mult(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
-	ciphertext := bfv.NewCiphertext(BfvParams, 1)
-	ciphertext2 := bfv.NewCiphertext(BfvParams, 1)
-
-	err := ciphertext.UnmarshalBinary(encryptedData)
+	ciphertext, err := unmarshallIntoNewCiphertext(encryptedData)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ciphertext2.UnmarshalBinary(encryptedData2)
+	ciphertext2, err := unmarshallIntoNewCiphertext(encryptedData2)
 	if err != nil {
 		return nil, err
 	}

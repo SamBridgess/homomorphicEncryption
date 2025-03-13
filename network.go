@@ -1,4 +1,4 @@
-package homomorphic_encryption_lib
+package homomorphicEncryption
 
 import (
 	"bytes"
@@ -10,6 +10,22 @@ import (
 	"io"
 	"net/http"
 )
+
+type DecryptedResultResponseInt struct {
+	DecryptedResult int64 `json:"decrypted_result"`
+}
+
+type DecryptedResultResponseFloat struct {
+	DecryptedResult float64 `json:"decrypted_result"`
+}
+
+type BfvEvalKeysResult struct {
+	EvalKeys string `json:"bfv_eval_keys"`
+}
+
+type CkksEvalKeysResult struct {
+	EvalKeys string `json:"ckks_eval_keys"`
+}
 
 // HttpsServer Basic https server configuration
 var (
@@ -130,10 +146,7 @@ func GetCkksEvalKeysFromServer(serverURL string) (EvalKeys, error) {
 		return EvalKeys{}, err
 	}
 
-	var response struct {
-		EvalKeys string `json:"ckks_eval_keys"`
-	}
-
+	response := CkksEvalKeysResult{}
 	if err := json.Unmarshal(body, &response); err != nil {
 		return EvalKeys{}, err
 	}
@@ -161,10 +174,7 @@ func GetBfvEvalKeysFromServer(serverURL string) (EvalKeys, error) {
 		return EvalKeys{}, err
 	}
 
-	var response struct {
-		EvalKeys string `json:"bfv_eval_keys"`
-	}
-
+	response := BfvEvalKeysResult{}
 	if err := json.Unmarshal(body, &response); err != nil {
 		return EvalKeys{}, err
 	}
@@ -192,9 +202,7 @@ func SendComputationResultToServer_ckks(url string, encryptedResult []byte) (flo
 	}
 	defer resp.Body.Close()
 
-	var response struct {
-		DecryptedResult float64 `json:"decrypted_result"`
-	}
+	response := DecryptedResultResponseFloat{}
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return 0.0, err
 	}
@@ -217,9 +225,7 @@ func SendComputationResultToServer_bfv(url string, encryptedResult []byte) (int6
 	}
 	defer resp.Body.Close()
 
-	var response struct {
-		DecryptedResult int64 `json:"decrypted_result"`
-	}
+	response := DecryptedResultResponseInt{}
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return 0.0, err
 	}

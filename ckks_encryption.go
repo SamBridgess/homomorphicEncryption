@@ -1,4 +1,4 @@
-package homomorphic_encryption_lib
+package homomorphicEncryption
 
 import (
 	"github.com/ldsec/lattigo/v2/ckks"

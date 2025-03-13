@@ -1,4 +1,4 @@
-package homomorphic_encryption_lib
+package homomorphicEncryption
 
 import (
 	"encoding/json"
@@ -11,19 +11,29 @@ import (
 
 type Method int
 
-const (
-	CKKS Method = iota
-	BFV
-)
-
-var CkksKeys KeyPair
-var BfvKeys KeyPair
-
 // KeyPair Struct containing rlwe.SecretKey and rlwe.PublicKey
 type KeyPair struct {
 	Sk *rlwe.SecretKey
 	Pk *rlwe.PublicKey
 }
+
+// EvalKeys Struct containing rlwe.EvaluationKey for sending it to client
+type EvalKeys struct {
+	EvalKey1 rlwe.EvaluationKey
+}
+
+const (
+	CKKS Method = iota
+	BFV
+)
+
+var (
+	CkksKeys KeyPair
+	BfvKeys  KeyPair
+
+	EvalKeysCkks EvalKeys
+	EvalKeysBfv  EvalKeys
+)
 
 // GenKeysCKKS Generates new KeyPair of ckks keys, returns Sk and Pk KeyPair
 func GenKeysCKKS() KeyPair {
@@ -33,13 +43,6 @@ func GenKeysCKKS() KeyPair {
 // GenKeysBFV Generates new KeyPair bfv keys
 func GenKeysBFV() KeyPair {
 	return NewKeyPair(bfv.NewKeyGenerator(BfvParams).GenKeyPair())
-}
-
-var EvalKeysCkks EvalKeys
-var EvalKeysBfv EvalKeys
-
-type EvalKeys struct {
-	EvalKey1 rlwe.EvaluationKey
 }
 
 func SetEvalKeysByMethod(method Method) {

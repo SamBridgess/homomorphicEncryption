@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	he "github.com/SamBridgess/homomorphic_encryption_lib"
-	"github.com/SamBridgess/homomorphic_encryption_lib/bfvMath"
-	"github.com/SamBridgess/homomorphic_encryption_lib/ckksMath"
+	he "github.com/SamBridgess/homomorphicEncryption"
+	"github.com/SamBridgess/homomorphicEncryption/bfvMath"
+	"github.com/SamBridgess/homomorphicEncryption/ckksMath"
 	_ "github.com/lib/pq"
 	"log"
 	"reflect"
