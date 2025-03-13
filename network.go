@@ -187,8 +187,8 @@ func GetBfvEvalKeysFromServer(serverURL string) (EvalKeys, error) {
 	return bfvEvalKeys, nil
 }
 
-// SendComputationResultToServer_ckks Send CKKS computation results to server and get a decrypted result
-func SendComputationResultToServer_ckks(url string, encryptedResult []byte) (float64, error) {
+// SendComputationResultToServerCkks Send CKKS computation results to server and get a decrypted result
+func SendComputationResultToServerCkks(url string, encryptedResult []byte) (float64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
 	if err != nil {
 		return 0.0, err
@@ -210,8 +210,8 @@ func SendComputationResultToServer_ckks(url string, encryptedResult []byte) (flo
 	return response.DecryptedResult, nil
 }
 
-// SendComputationResultToServer_bfv Send BFV computation results to server and get a decrypted result
-func SendComputationResultToServer_bfv(url string, encryptedResult []byte) (int64, error) {
+// SendComputationResultToServerBfv Send BFV computation results to server and get a decrypted result
+func SendComputationResultToServerBfv(url string, encryptedResult []byte) (int64, error) {
 	data, err := json.Marshal(map[string][]byte{"encrypted_result": encryptedResult})
 	if err != nil {
 		return 0.0, err

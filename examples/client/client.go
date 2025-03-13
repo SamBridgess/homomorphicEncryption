@@ -67,7 +67,7 @@ func testConstOperationCkks(operation ckksMath.ConstOperation, data []byte, cons
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_ckks", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerCkks(serverUrl+"/decrypt_computations_ckks", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,7 +78,7 @@ func testOperation1Ckks(operation ckksMath.Operation1, data []byte) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_ckks", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerCkks(serverUrl+"/decrypt_computations_ckks", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -89,7 +89,7 @@ func testOperation2Ckks(operation ckksMath.Operation2, data []byte, data2 []byte
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_ckks", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerCkks(serverUrl+"/decrypt_computations_ckks", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -100,7 +100,7 @@ func testArrayOperationCkks(operation ckksMath.ArrayOperation, data [][]byte) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_ckks", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerCkks(serverUrl+"/decrypt_computations_ckks", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -111,7 +111,7 @@ func testArrayOperation2Ckks(operation ckksMath.ArrayOperation2, data [][]byte, 
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_ckks", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerCkks(serverUrl+"/decrypt_computations_ckks", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -122,7 +122,7 @@ func testOperation3Ckks(operation ckksMath.Operation3, data []byte, data2 []byte
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_ckks", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerCkks(serverUrl+"/decrypt_computations_ckks", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -134,9 +134,9 @@ func testArrayOperationWithParamReturningArrayCkks(operation ckksMath.ArrayOpera
 		log.Fatal(err)
 	}
 
-	var decryptedArray []float64 = make([]float64, len(calcRes))
+	var decryptedArray = make([]float64, len(calcRes))
 	for i, val := range calcRes {
-		decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_ckks", val)
+		decryptedCalcResultCkks, err := he.SendComputationResultToServerCkks(serverUrl+"/decrypt_computations_ckks", val)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -151,33 +151,33 @@ func testConstOperationBfv(operation bfvMath.ConstOperation, data []byte, consta
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_bfv", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerBfv(serverUrl+"/decrypt_computations_bfv", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("BFV %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
+	fmt.Printf("BFV %s result: %d \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
 func testOperation2Bfv(operation bfvMath.Operation2, data []byte, data2 []byte) {
 	calcRes, err := operation(data, data2)
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_bfv", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerBfv(serverUrl+"/decrypt_computations_bfv", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("BFV %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
+	fmt.Printf("BFV %s result: %d \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
 func testArrayOperationBfv(operation bfvMath.ArrayOperation, data [][]byte) {
 	calcRes, err := operation(data)
 	if err != nil {
 		log.Fatal(err)
 	}
-	decryptedCalcResultCkks, err := he.SendComputationResultToServer_ckks(serverUrl+"/decrypt_computations_bfv", calcRes)
+	decryptedCalcResultCkks, err := he.SendComputationResultToServerBfv(serverUrl+"/decrypt_computations_bfv", calcRes)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("BFV %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
+	fmt.Printf("BFV %s result: %d \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
 
 func getFunctionName(f interface{}) string {
