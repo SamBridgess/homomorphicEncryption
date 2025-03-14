@@ -1,5 +1,29 @@
 # Server guide
 
+For quick installation on a clean system you can use `setup.sh` scrypt, located in this directory.
+Run
+
+```commandline
+./setup.sh
+```
+from this directory. In case you are at any point asked for `postgres` password, use `123456.
+
+After running the crypt, use 
+```commandline
+source ~/.profile
+```
+in the working terminal, so that current terminal updates to the changes made in the script
+unfortunately, this command can not be included into script in order for in to work properly.
+
+## Running Server
+To quickly test-run the server app, type
+``` commandline
+sudo go run server.go
+```
+in the command line in the root folder of the server. Notice,
+that executing from the root folder is yet mandatory. Also notice, that unlike
+`client.go`, `server.go` must be run with `sudo`
+
 ## Certificates
 HTTPS requires secured connection. If your goal is simply
 trying examples out on your local machine, you can generate
@@ -83,11 +107,3 @@ CREATE USER client WITH PASSWORD '123456';
 GRANT SELECT ON encrypted_data_ckks_bfv TO client;
 ```
 
-## Running Server
-To quickly test-run the server app, type 
-``` commandline
-sudo go run server.go
-```
-in the command line in the root folder of the server. Notice, 
-that executing from the root folder is yet mandatory. Also notice, that unlike
-`client.go`, `server.go` must be run with `sudo`
