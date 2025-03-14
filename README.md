@@ -20,7 +20,6 @@ computations on encrypted data, and ensuring data confidentiality.
 - [💼 Use Cases](#-use-cases)
 - [⚙️ How It Works](#-how-it-works)
 - [🚀 Quick Start](#-quick-start)
-- [🤝 Contributing](#-contributing)
 - [📜 License](#-license)
 
 ---
