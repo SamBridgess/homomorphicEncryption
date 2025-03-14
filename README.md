@@ -85,7 +85,7 @@ This library is ideal for scenarios where:
 
 **Examples**:
 - **📊 CKKS**: Machine learning on encrypted data, encrypted signal processing.
-- **💰 BFV**: Financial calculations, secure voting systems.
+- **💰 BFV**: Financial calculations(like auctions, bidding, tax calculations etc.), secure voting systems. 
 
 ---
 
