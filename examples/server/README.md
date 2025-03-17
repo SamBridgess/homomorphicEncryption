@@ -1,6 +1,6 @@
 # Server guide
 
-For quick installation on a clean system you can use `setup.sh` scrypt, located in this directory.
+For quick installation on a clean system you can use `setup.sh` script, located in this directory.
 Run
 
 ```commandline
@@ -8,7 +8,7 @@ Run
 ```
 from this directory. In case you are at any point asked for `postgres` password, use `123456.
 
-After running the crypt, use 
+After running the script, use 
 ```commandline
 source ~/.profile
 ```
