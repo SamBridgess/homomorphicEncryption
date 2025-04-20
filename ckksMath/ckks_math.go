@@ -3,6 +3,7 @@ package ckksMath
 import (
 	"github.com/ldsec/lattigo/v2/ckks"
 	"github.com/ldsec/lattigo/v2/rlwe"
+	"log"
 )
 
 type ConstOperation func([]byte, float64) ([]byte, error)
@@ -42,6 +43,7 @@ func AddConst(encryptedData []byte, addValue float64) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("CKKS: AddConst success")
 	return CkksEvaluator.AddConstNew(ciphertext, addValue).MarshalBinary()
 }
 
@@ -53,6 +55,7 @@ func SubtractConst(encryptedData []byte, subValue float64) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("CKKS: SubtractConst success")
 	return CkksEvaluator.AddConstNew(ciphertext, -subValue).MarshalBinary()
 }
 
@@ -64,6 +67,7 @@ func MultByConst(encryptedData []byte, multValue float64) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("CKKS: MultByConst success")
 	return CkksEvaluator.MultByConstNew(ciphertext, multValue).MarshalBinary()
 }
 
@@ -76,6 +80,7 @@ func DivByConst(encryptedDataDividend []byte, encryptedDataDivisor float64) ([]b
 		return nil, err
 	}
 
+	log.Println("CKKS: DivByConst success")
 	return CkksEvaluator.MultByConstNew(ciphertext, 1.0/encryptedDataDivisor).MarshalBinary()
 }
 
@@ -92,6 +97,7 @@ func Sum(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("CKKS: Sum success")
 	return CkksEvaluator.AddNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
@@ -108,6 +114,7 @@ func Subtract(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("CKKS: Subtract success")
 	return CkksEvaluator.SubNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
@@ -124,6 +131,7 @@ func Mult(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("CKKS: Mult success")
 	return CkksEvaluator.MulNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
@@ -135,16 +143,6 @@ func Pow2(encryptedData []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("CKKS: Pow2 success")
 	return CkksEvaluator.MulNew(ciphertext, ciphertext).MarshalBinary()
 }
-
-/*
-func TwoStepDivision(encryptedData []byte, encryptedData2 []byte, url string) ([]byte, error) {
-	divisorDecrypted, err := he.SendComputationResultToServer(url, encryptedData2)
-	if err != nil {
-		return nil, err
-	}
-
-	return DivByConst(encryptedData, divisorDecrypted)
-}
-*/

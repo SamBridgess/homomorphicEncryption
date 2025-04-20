@@ -3,6 +3,7 @@ package bfvMath
 import (
 	"github.com/ldsec/lattigo/v2/bfv"
 	"github.com/ldsec/lattigo/v2/rlwe"
+	"log"
 )
 
 type ConstOperation func([]byte, uint64) ([]byte, error)
@@ -42,6 +43,7 @@ func MultByPositiveConst(encryptedData []byte, multValue uint64) ([]byte, error)
 		return nil, err
 	}
 
+	log.Println("BFV: MultByPositiveConst success")
 	return BfvEvaluator.MulScalarNew(ciphertext, multValue).MarshalBinary()
 }
 
@@ -58,6 +60,7 @@ func Sum(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("BFV: Sum success")
 	return BfvEvaluator.AddNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
@@ -74,6 +77,7 @@ func Subtract(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("BFV: Subtract success")
 	return BfvEvaluator.SubNew(ciphertext, ciphertext2).MarshalBinary()
 }
 
@@ -90,5 +94,6 @@ func Mult(encryptedData []byte, encryptedData2 []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("BFV: Mult success")
 	return BfvEvaluator.MulNew(ciphertext, ciphertext2).MarshalBinary()
 }

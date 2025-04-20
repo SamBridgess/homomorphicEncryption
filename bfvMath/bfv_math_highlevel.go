@@ -3,6 +3,7 @@ package bfvMath
 import (
 	"errors"
 	"github.com/ldsec/lattigo/v2/bfv"
+	"log"
 )
 
 type ArrayOperation func([][]byte) ([]byte, error)
@@ -29,5 +30,6 @@ func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 		}
 	}
 
+	log.Println("BFV: ArraySum success")
 	return sumCiphertext.MarshalBinary()
 }

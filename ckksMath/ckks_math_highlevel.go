@@ -2,6 +2,7 @@ package ckksMath
 
 import (
 	"errors"
+	"log"
 )
 
 type ArrayOperation func([][]byte) ([]byte, error)
@@ -29,6 +30,7 @@ func ArraySum(encryptedDataArray [][]byte) ([]byte, error) {
 		CkksEvaluator.Add(sumCiphertext, ciphertext, sumCiphertext)
 	}
 
+	log.Println("CKKS: ArraySum success")
 	return sumCiphertext.MarshalBinary()
 }
 
@@ -44,6 +46,7 @@ func ArrayMean(encryptedDataArray [][]byte) ([]byte, error) {
 		return nil, err
 	}
 
+	log.Println("CKKS: ArrayMean success")
 	return CkksEvaluator.MultByConstNew(ciphertext, 1.0/float64(len(encryptedDataArray))).MarshalBinary()
 }
 
@@ -59,6 +62,8 @@ func MovingAverage(encryptedDataArray [][]byte, windowSize int) ([][]byte, error
 			return nil, err
 		}
 	}
+
+	log.Println("CKKS: MovingAverage success")
 	return r, nil
 }
 
@@ -105,6 +110,7 @@ func Variance(encryptedDataArray [][]byte) ([]byte, error) { //дисперси�
 		return nil, err
 	}
 
+	log.Println("CKKS: Variance success")
 	return result, nil
 }
 
@@ -164,6 +170,7 @@ func Covariance(encryptedDataArray1 [][]byte, encryptedDataArray2 [][]byte) ([]b
 		return nil, err
 	}
 
+	log.Println("CKKS: Covariance success")
 	return result, nil
 }
 
@@ -180,6 +187,7 @@ func ArithmeticProgressionElementN(firstMember []byte, dif []byte, n []byte) ([]
 		return nil, err
 	}
 
+	log.Println("CKKS: ArithmeticProgressionElementN success")
 	return Sum(firstMember, mult)
 }
 
@@ -213,5 +221,6 @@ func ArithmeticProgressionSum(firstMember []byte, dif []byte, numberOfMembers []
 		return nil, err
 	}
 
+	log.Println("CKKS: ArithmeticProgressionSum success")
 	return DivByConst(mult, 2.0)
 }
