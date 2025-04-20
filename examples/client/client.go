@@ -37,32 +37,32 @@ func main() {
 	}
 
 	fmt.Println("CKKS Demonstration:")
-	testConstOperationCkks(ckksMath.AddConst, retrievedEncryptedDataCkks[0], 2.0)
-	testConstOperationCkks(ckksMath.MultByConst, retrievedEncryptedDataCkks[0], 2.0)
-	testConstOperationCkks(ckksMath.SubtractConst, retrievedEncryptedDataCkks[0], 2.0)
-	testConstOperationCkks(ckksMath.MultByConst, retrievedEncryptedDataCkks[0], 2.0)
-	testConstOperationCkks(ckksMath.DivByConst, retrievedEncryptedDataCkks[0], 2.0)
-	testOperation2Ckks(ckksMath.Sum, retrievedEncryptedDataCkks[0], retrievedEncryptedDataCkks[1])
-	testOperation2Ckks(ckksMath.Subtract, retrievedEncryptedDataCkks[0], retrievedEncryptedDataCkks[1])
-	testOperation2Ckks(ckksMath.Mult, retrievedEncryptedDataCkks[0], retrievedEncryptedDataCkks[1])
-	testOperation1Ckks(ckksMath.Pow2, retrievedEncryptedDataCkks[0])
-	testArrayOperationCkks(ckksMath.ArraySum, retrievedEncryptedDataCkks)
-	testArrayOperationCkks(ckksMath.ArrayMean, retrievedEncryptedDataCkks)
-	testArrayOperationWithParamReturningArrayCkks(ckksMath.MovingAverage, retrievedEncryptedDataCkks, 3)
-	testArrayOperationCkks(ckksMath.Variance, retrievedEncryptedDataCkks)
-	testArrayOperation2Ckks(ckksMath.Covariance, retrievedEncryptedDataCkks, retrievedEncryptedDataCkks)
-	testOperation3Ckks(ckksMath.ArithmeticProgressionElementN, retrievedEncryptedDataCkks[4], retrievedEncryptedDataCkks[3], retrievedEncryptedDataCkks[0])
-	testOperation3Ckks(ckksMath.ArithmeticProgressionSum, retrievedEncryptedDataCkks[4], retrievedEncryptedDataCkks[3], retrievedEncryptedDataCkks[0])
+	performConstOperationCkks(ckksMath.AddConst, retrievedEncryptedDataCkks[0], 2.0)
+	performConstOperationCkks(ckksMath.MultByConst, retrievedEncryptedDataCkks[0], 2.0)
+	performConstOperationCkks(ckksMath.SubtractConst, retrievedEncryptedDataCkks[0], 2.0)
+	performConstOperationCkks(ckksMath.MultByConst, retrievedEncryptedDataCkks[0], 2.0)
+	performConstOperationCkks(ckksMath.DivByConst, retrievedEncryptedDataCkks[0], 2.0)
+	performOperation2Ckks(ckksMath.Sum, retrievedEncryptedDataCkks[0], retrievedEncryptedDataCkks[1])
+	performOperation2Ckks(ckksMath.Subtract, retrievedEncryptedDataCkks[0], retrievedEncryptedDataCkks[1])
+	performOperation2Ckks(ckksMath.Mult, retrievedEncryptedDataCkks[0], retrievedEncryptedDataCkks[1])
+	performOperation1Ckks(ckksMath.Pow2, retrievedEncryptedDataCkks[0])
+	performArrayOperationCkks(ckksMath.ArraySum, retrievedEncryptedDataCkks)
+	performArrayOperationCkks(ckksMath.ArrayMean, retrievedEncryptedDataCkks)
+	performArrayOperationWithParamReturningArrayCkks(ckksMath.MovingAverage, retrievedEncryptedDataCkks, 3)
+	performArrayOperationCkks(ckksMath.Variance, retrievedEncryptedDataCkks)
+	performArrayOperation2Ckks(ckksMath.Covariance, retrievedEncryptedDataCkks, retrievedEncryptedDataCkks)
+	performOperation3Ckks(ckksMath.ArithmeticProgressionElementN, retrievedEncryptedDataCkks[4], retrievedEncryptedDataCkks[3], retrievedEncryptedDataCkks[0])
+	performOperation3Ckks(ckksMath.ArithmeticProgressionSum, retrievedEncryptedDataCkks[4], retrievedEncryptedDataCkks[3], retrievedEncryptedDataCkks[0])
 
 	fmt.Println("\nBFV Demonstration:")
-	testConstOperationBfv(bfvMath.MultByPositiveConst, retrievedEncryptedDataBfv[0], uint64(2))
-	testOperation2Bfv(bfvMath.Sum, retrievedEncryptedDataBfv[0], retrievedEncryptedDataBfv[1])
-	testOperation2Bfv(bfvMath.Subtract, retrievedEncryptedDataBfv[0], retrievedEncryptedDataBfv[1])
-	testOperation2Bfv(bfvMath.Mult, retrievedEncryptedDataBfv[0], retrievedEncryptedDataBfv[1])
-	testArrayOperationBfv(bfvMath.ArraySum, retrievedEncryptedDataBfv)
+	performConstOperationBfv(bfvMath.MultByPositiveConst, retrievedEncryptedDataBfv[0], uint64(2))
+	performOperation2Bfv(bfvMath.Sum, retrievedEncryptedDataBfv[0], retrievedEncryptedDataBfv[1])
+	performOperation2Bfv(bfvMath.Subtract, retrievedEncryptedDataBfv[0], retrievedEncryptedDataBfv[1])
+	performOperation2Bfv(bfvMath.Mult, retrievedEncryptedDataBfv[0], retrievedEncryptedDataBfv[1])
+	performArrayOperationBfv(bfvMath.ArraySum, retrievedEncryptedDataBfv)
 }
 
-func testConstOperationCkks(operation ckksMath.ConstOperation, data []byte, constant float64) {
+func performConstOperationCkks(operation ckksMath.ConstOperation, data []byte, constant float64) {
 	calcRes, err := operation(data, constant)
 	if err != nil {
 		log.Fatal(err)
@@ -73,7 +73,7 @@ func testConstOperationCkks(operation ckksMath.ConstOperation, data []byte, cons
 	}
 	fmt.Printf("CKKS %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
-func testOperation1Ckks(operation ckksMath.Operation1, data []byte) {
+func performOperation1Ckks(operation ckksMath.Operation1, data []byte) {
 	calcRes, err := operation(data)
 	if err != nil {
 		log.Fatal(err)
@@ -84,7 +84,7 @@ func testOperation1Ckks(operation ckksMath.Operation1, data []byte) {
 	}
 	fmt.Printf("CKKS %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
-func testOperation2Ckks(operation ckksMath.Operation2, data []byte, data2 []byte) {
+func performOperation2Ckks(operation ckksMath.Operation2, data []byte, data2 []byte) {
 	calcRes, err := operation(data, data2)
 	if err != nil {
 		log.Fatal(err)
@@ -95,7 +95,7 @@ func testOperation2Ckks(operation ckksMath.Operation2, data []byte, data2 []byte
 	}
 	fmt.Printf("CKKS %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
-func testArrayOperationCkks(operation ckksMath.ArrayOperation, data [][]byte) {
+func performArrayOperationCkks(operation ckksMath.ArrayOperation, data [][]byte) {
 	calcRes, err := operation(data)
 	if err != nil {
 		log.Fatal(err)
@@ -106,7 +106,7 @@ func testArrayOperationCkks(operation ckksMath.ArrayOperation, data [][]byte) {
 	}
 	fmt.Printf("CKKS %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
-func testArrayOperation2Ckks(operation ckksMath.ArrayOperation2, data [][]byte, data2 [][]byte) {
+func performArrayOperation2Ckks(operation ckksMath.ArrayOperation2, data [][]byte, data2 [][]byte) {
 	calcRes, err := operation(data, data2)
 	if err != nil {
 		log.Fatal(err)
@@ -117,7 +117,7 @@ func testArrayOperation2Ckks(operation ckksMath.ArrayOperation2, data [][]byte, 
 	}
 	fmt.Printf("CKKS %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
-func testOperation3Ckks(operation ckksMath.Operation3, data []byte, data2 []byte, data3 []byte) {
+func performOperation3Ckks(operation ckksMath.Operation3, data []byte, data2 []byte, data3 []byte) {
 	calcRes, err := operation(data, data2, data3)
 	if err != nil {
 		log.Fatal(err)
@@ -128,7 +128,7 @@ func testOperation3Ckks(operation ckksMath.Operation3, data []byte, data2 []byte
 	}
 	fmt.Printf("CKKS %s result: %f \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
-func testArrayOperationWithParamReturningArrayCkks(operation ckksMath.ArrayOperationWithParamReturningArray, data [][]byte, param int) {
+func performArrayOperationWithParamReturningArrayCkks(operation ckksMath.ArrayOperationWithParamReturningArray, data [][]byte, param int) {
 	calcRes, err := operation(data, param)
 	if err != nil {
 		log.Fatal(err)
@@ -146,7 +146,7 @@ func testArrayOperationWithParamReturningArrayCkks(operation ckksMath.ArrayOpera
 	fmt.Printf("CKKS %s result: %.2f \n", getFunctionName(operation), decryptedArray)
 }
 
-func testConstOperationBfv(operation bfvMath.ConstOperation, data []byte, constant uint64) {
+func performConstOperationBfv(operation bfvMath.ConstOperation, data []byte, constant uint64) {
 	calcRes, err := operation(data, constant)
 	if err != nil {
 		log.Fatal(err)
@@ -157,7 +157,7 @@ func testConstOperationBfv(operation bfvMath.ConstOperation, data []byte, consta
 	}
 	fmt.Printf("BFV %s result: %d \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
-func testOperation2Bfv(operation bfvMath.Operation2, data []byte, data2 []byte) {
+func performOperation2Bfv(operation bfvMath.Operation2, data []byte, data2 []byte) {
 	calcRes, err := operation(data, data2)
 	if err != nil {
 		log.Fatal(err)
@@ -168,7 +168,7 @@ func testOperation2Bfv(operation bfvMath.Operation2, data []byte, data2 []byte) 
 	}
 	fmt.Printf("BFV %s result: %d \n", getFunctionName(operation), decryptedCalcResultCkks)
 }
-func testArrayOperationBfv(operation bfvMath.ArrayOperation, data [][]byte) {
+func performArrayOperationBfv(operation bfvMath.ArrayOperation, data [][]byte) {
 	calcRes, err := operation(data)
 	if err != nil {
 		log.Fatal(err)

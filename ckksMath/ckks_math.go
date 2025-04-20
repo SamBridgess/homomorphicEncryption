@@ -34,14 +34,6 @@ func makeZeroCiphertext(someEncryptedData []byte) (*ckks.Ciphertext, error) {
 	return CkksEvaluator.SubNew(ciphertext, ciphertext), nil
 }
 
-// makeCiphertextFromFloat Takes a float64 number and any encrypted data to make a zeroCiphertext from
-// and then adds the float64 to zero which makes an encrypted representation of the initial float64 number
-func makeCiphertextFromFloat(number float64, someEncryptedData []byte) *ckks.Ciphertext {
-	zeroCiphertext, _ := makeZeroCiphertext(someEncryptedData)
-	ciphertext := CkksEvaluator.AddConstNew(zeroCiphertext, number)
-	return ciphertext
-}
-
 // AddConst Adds a float64 addValue to encrypted data, producing []byte of encrypted data
 // containing a sum of encryptedData data and addValue when decrypted
 func AddConst(encryptedData []byte, addValue float64) ([]byte, error) {
@@ -143,7 +135,6 @@ func Pow2(encryptedData []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	//return CkksEvaluator.PowerNew(ciphertext, 2).MarshalBinary()
 	return CkksEvaluator.MulNew(ciphertext, ciphertext).MarshalBinary()
 }
 

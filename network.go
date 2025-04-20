@@ -36,15 +36,6 @@ var (
 	}
 )
 
-// ServerHandler HTTP Handler
-func ServerHandler() *gin.Engine {
-	r := gin.Default()
-
-	r.POST("/decrypt_computations_ckks", handleDecryptCkks)
-	r.GET("/get_ckks_params", handleGetCkksParams)
-	return r
-}
-
 // StartSecureServer Start HTTPS server. Port must be passed as is, without ':'
 func StartSecureServer(port string, certFile string, keyFile string) {
 	gin.SetMode(gin.ReleaseMode)
